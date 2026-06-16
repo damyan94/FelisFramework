@@ -17,8 +17,6 @@
 	LogError(__VA_ARGS__);                                                                                             \
 	_DebugBreak
 
-//#define Format(_Text, ...) std::format(_Text, __VA_ARGS__)
-
 #define ReturnIf(_Condition, ...)                                                                                      \
 	if (_Condition)                                                                                                    \
 	return __VA_ARGS__

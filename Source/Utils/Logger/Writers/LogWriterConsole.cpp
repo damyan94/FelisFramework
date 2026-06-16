@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "LogWriterConsole.h"
+#include "Utils/Logger/Writers/LogWriterConsole.h"
 
 void LogWriterConsole::Write(const LogEntry& log, const class ILogFormatter& formatter)
 {

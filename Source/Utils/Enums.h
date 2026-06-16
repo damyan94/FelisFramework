@@ -17,7 +17,7 @@ constexpr inline bool IsEnumValueValid(EnumType value)
 enum class ELogDestinationType : uint8_t
 {
 	Console,
-	TXT,
+	LOG,
 	CSV,
 	JSON,
 	XML
@@ -77,10 +77,7 @@ enum class EUnitOfTime : uint8_t
 	Second,
 	Minute,
 	Hour,
-	Day,
-	Week,
-	Month,
-	Year
+	Day
 };
 
 enum class ETimeStringFormat : uint8_t

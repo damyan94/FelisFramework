@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "LogFormatterConsole.h"
+#include "Utils/Logger/Formatters/LogFormatterConsole.h"
 
 #include "Utils/Logger/ConsoleFormat.h"
 
@@ -47,9 +47,9 @@ std::string LogFormatterConsole::Format(const LogEntry& log) const
 	return ss.str();
 }
 
-void LogFormatterConsole::FormatTime(const Time& time, std::stringstream& stream) const
+void LogFormatterConsole::FormatTime(const DateTime& time, std::stringstream& stream) const
 {
-	stream << '[' << time.GetString(ETimeStringFormat::Default) << "] ";
+	stream << '[' << time.ToString(ETimeStringFormat::Default) << "] ";
 }
 
 void LogFormatterConsole::FormatLevel(ELogLevel level, std::stringstream& stream) const

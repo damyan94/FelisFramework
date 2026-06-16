@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Log.h"
+#include "Utils/Logger/Log.h"
 
 LogFlags& LogFlags::SetFlag(uint8_t flag, bool value)
 {

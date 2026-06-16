@@ -1,3 +1,3 @@
 #include "stdafx.h"
 
-#include "ILogWriter.h"
+#include "Utils/Logger/Writers/ILogWriter.h"

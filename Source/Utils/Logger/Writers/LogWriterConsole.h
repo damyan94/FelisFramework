@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ILogWriter.h"
+#include "Utils/Logger/Writers/ILogWriter.h"
 
 class LogWriterConsole final : public ILogWriter
 {

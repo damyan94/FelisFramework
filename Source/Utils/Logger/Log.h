@@ -21,7 +21,7 @@ struct LogFlags
 struct LogEntry
 {
 	LogFlags	Flags;
-	Time		Time;
+	DateTime	Time;
 	ELogLevel	Level;
 	std::string Prefix;
 	std::string Message;

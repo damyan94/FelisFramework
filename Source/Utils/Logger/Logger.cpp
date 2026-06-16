@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Logger.h"
+#include "Utils/Logger/Logger.h"
 
 Logger g_Logger;
 
@@ -9,24 +9,9 @@ void Logger::SetLogPrefix(const std::string& prefix)
 	m_Prefix = prefix;
 }
 
-const std::string& Logger::GetLogPrefix() const
-{
-	return m_Prefix;
-}
-
 void Logger::SetLogLevel(ELogLevel level)
 {
 	m_Level = level;
-}
-
-ELogLevel Logger::GetLogLevel() const
-{
-	return m_Level;
-}
-
-bool Logger::IsLogLevelEnabled(ELogLevel level) const
-{
-	return level <= m_Level;
 }
 
 void Logger::SetLogFlags(uint8_t flags)
@@ -37,6 +22,21 @@ void Logger::SetLogFlags(uint8_t flags)
 void Logger::SetLogFlags(LogFlags flags)
 {
 	m_Flags = flags;
+}
+
+const std::string& Logger::GetLogPrefix() const
+{
+	return m_Prefix;
+}
+
+ELogLevel Logger::GetLogLevel() const
+{
+	return m_Level;
+}
+
+bool Logger::IsLogLevelEnabled(ELogLevel level) const
+{
+	return level <= m_Level;
 }
 
 LogFlags Logger::GetLogFlags() const
@@ -411,8 +411,8 @@ void TestLogger()
 		for (int i = 0; i < 100; ++i)
 			logger.LogFmt(ELogLevel::Debug, "msg {}", i);
 
-		const uint64_t ms = start.GetElapsedTime(EUnitOfTime::Millisecond);
-		const uint64_t us = start.GetElapsedTime(EUnitOfTime::Microsecond);
+		const uint64_t ms = start.ElapsedAs(EUnitOfTime::Millisecond);
+		const uint64_t us = start.ElapsedAs(EUnitOfTime::Microsecond);
 
 		logger.LogFmt(ELogLevel::Info, "rapid fire done — 100 messages in {}ms ({}us)", ms, us);
 	}
