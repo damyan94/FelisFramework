@@ -2,6 +2,7 @@
 
 #include "Utils/Logger/Log.h"
 
+// Interface for all log formatters
 class ILogFormatter
 {
 public:

@@ -1,24 +1,12 @@
 #include "stdafx.h"
 
-#include "Utils/Logger/Formatters/LogFormatterConsole.h"
-#include "Utils/Logger/Writers/LogWriterConsole.h"
+#include "Examples/ExampleApplication.h"
 
-void InitLogging()
+// Entrypoint
+// TODO change cmake file so we can build as either lib (.so or .a), test app or example app
+int main(int argC, char** argV)
 {
-	g_Logger.SetLogPrefix("");
-	g_Logger.SetLogLevel(ELogLevel::Debug);
-	g_Logger.SetLogFlags(LogFlags::All);
-	g_Logger.AddLogDestination(
-		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterConsole>()});
+	ExampleApplication app(argC, argV);
 
-	LogInfo("Logging initialized successfully.");
-}
-
-int main(int /*argC*/, char** /*argV*/)
-{
-	InitLogging();
-
-	Test::TestLogger();
-
-	return 0;
+	return app.RunApplication();
 }

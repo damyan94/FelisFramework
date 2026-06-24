@@ -1,5 +1,6 @@
 #pragma once
 
+// uint8_t flags for a log message
 struct LogFlags
 {
 	enum Type : uint8_t
@@ -18,6 +19,7 @@ struct LogFlags
 	uint8_t Flags = 0;
 };
 
+// A log message
 struct LogEntry
 {
 	LogFlags	Flags;

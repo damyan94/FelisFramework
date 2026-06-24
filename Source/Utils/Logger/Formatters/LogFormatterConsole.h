@@ -2,6 +2,8 @@
 
 #include "Utils/Logger/Formatters/ILogFormatter.h"
 
+// Formats a line to be printed on the console in the format
+// <COLOR> [TIMESTAMP] [LEVEL] [PREFIX] MESSAGE <DEFAULT_COLOR>
 class LogFormatterConsole final : public ILogFormatter
 {
 public:

@@ -5,6 +5,8 @@
 #include "Utils/Logger/Formatters/ILogFormatter.h"
 #include "Utils/Logger/Writers/ILogWriter.h"
 
+// A destination for logging stuff
+// Has a Type so we can log only some stuff, a ILogWriter and a ILogFormatter
 struct LogDestination
 {
 	ELogDestinationType Type;
@@ -14,6 +16,7 @@ struct LogDestination
 
 using LogDestinations = std::vector<LogDestination>;
 
+// A class that formats and writes logs to LogDestinations using their ILogFormatters and ILogWriters
 class Logger
 {
 public:
@@ -57,10 +60,7 @@ private:
 template <typename... Args>
 inline void Logger::Log(ELogLevel level, Args&&... args)
 {
-	if (!IsLogLevelEnabled(level))
-	{
-		return;
-	}
+	ReturnIf(!IsLogLevelEnabled(level));
 
 	std::stringstream ss;
 	(ss << ... << args);
@@ -71,15 +71,12 @@ inline void Logger::Log(ELogLevel level, Args&&... args)
 template <typename... Args>
 inline void Logger::LogFmt(ELogLevel level, std::format_string<Args...> fmt, Args&&... args)
 {
-	if (!IsLogLevelEnabled(level))
-	{
-		return;
-	}
+	ReturnIf(!IsLogLevelEnabled(level));
 
 	Log({m_Flags, DateTime::Now(), level, m_Prefix, std::format(fmt, std::forward<Args>(args)...)});
 }
 
-//TODO Move to separate class, file, project
+// TODO Move to separate class, file, project
 #ifdef FELIS_RUN_TESTS
 namespace Test
 {

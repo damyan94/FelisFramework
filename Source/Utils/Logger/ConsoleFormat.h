@@ -1,5 +1,7 @@
 #pragma once
 
+// Utilities for formatting output to the console
+// TODO add iomanip functionality
 class ConsoleFormat
 {
 public:

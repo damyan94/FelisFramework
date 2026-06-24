@@ -6,7 +6,7 @@
 #if defined(_WIN32)
 #define _DebugBreak __debugbreak()
 #elif defined(__linux__)
-#define _DebugBreak __asm__("int3");
+#define _DebugBreak __asm__("int3")
 #else
 #define _DebugBreak #warning Debug break not implemented for this platform
 #endif
@@ -14,7 +14,7 @@
 #define _DebugBreakInfo(_Reason) "File: " __FILE__ "; Line: " _Stringify(__LINE__) "; Reason: " _Stringify(_Reason)
 
 #define Assert(...)                                                                                                    \
-	LogError(__VA_ARGS__);                                                                                             \
+	LogError(_DebugBreakInfo(__VA_ARGS__));                                                                            \
 	_DebugBreak
 
 #define ReturnIf(_Condition, ...)                                                                                      \

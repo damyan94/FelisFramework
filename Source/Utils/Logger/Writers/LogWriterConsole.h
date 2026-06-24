@@ -2,6 +2,7 @@
 
 #include "Utils/Logger/Writers/ILogWriter.h"
 
+// Writes a line formatted with a ILogFormatter to the console
 class LogWriterConsole final : public ILogWriter
 {
 public:
