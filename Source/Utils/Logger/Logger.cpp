@@ -411,8 +411,8 @@ void TestLogger()
 		for (int i = 0; i < 100; ++i)
 			logger.LogFmt(ELogLevel::Debug, "msg {}", i);
 
-		const uint64_t ms = start.ElapsedAs(EUnitOfTime::Millisecond);
-		const uint64_t us = start.ElapsedAs(EUnitOfTime::Microsecond);
+		const uint64_t ms = start.GetElapsed().As(EUnitOfTime::Millisecond);
+		const uint64_t us = start.GetElapsed().As(EUnitOfTime::Microsecond);
 
 		logger.LogFmt(ELogLevel::Info, "rapid fire done — 100 messages in {}ms ({}us)", ms, us);
 	}

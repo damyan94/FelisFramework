@@ -38,7 +38,7 @@
 #include "Utils/Enums.h"
 #include "Utils/Macros.h"
 
-#include "Utils/Time/DateTime.h"
+#include "Utils/Time/Duration.h"
 #include "Utils/Time/Time.h"
 
 #include "Utils/Logger/Logger.h"

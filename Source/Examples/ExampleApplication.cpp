@@ -7,18 +7,16 @@ ExampleApplication::ExampleApplication(int argC, char** argV)
 {
 }
 
-int ExampleApplication::OnInit()
+bool ExampleApplication::OnInit()
 {
 	const auto& cfg = GetApplicationConfig();
 
 	LogDebug("Application initialized with FPS [", cfg.m_TargetFPS, "]");
 
-	return 0;
+	return true;
 }
 
-int ExampleApplication::OnUpdate(Time::Duration /*dt*/)
+void ExampleApplication::OnUpdate(Duration /*dt*/)
 {
 	Test::TestLogger();
-
-	return 0;
 }

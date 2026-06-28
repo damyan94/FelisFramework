@@ -9,8 +9,8 @@ public:
 	ExampleApplication(int argC, char** argV);
 	~ExampleApplication() = default;
 
-	int OnInit();
-	int OnUpdate(Time::Duration dt);
+	bool OnInit();
+	void OnUpdate(Duration dt);
 
 private:
 };

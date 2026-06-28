@@ -11,32 +11,36 @@ IApplication::IApplication(int argC, char** argV)
 {
 }
 
-int IApplication::RunApplication()
+void IApplication::OnDeinit()
 {
-	int ec = 0;
+}
 
-	ec |= Init();
+bool IApplication::RunApplication()
+{
+	ReturnIf(!Init(), false);
 
 	while (!m_ExitRequested)
 	{
-		const auto dt = m_Time.Elapsed();
+		const auto dt = m_Time.GetElapsed();
 		m_Time.Reset();
 
-		ec |= Update(dt);
+		Update(dt);
 
-		const uint64_t frameTargetTime = 1000000000 / m_Config.m_TargetFPS;
-		const uint64_t sleepDuration   = frameTargetTime - m_Time.ElapsedAs(EUnitOfTime::Nanosecond);
+		const auto frameTargetTime = Duration(Duration::Nanoseconds(1000000000) / m_Config.m_TargetFPS);
+		const auto sleepDuration   = frameTargetTime - dt;
 
 		LogDebug("Sleep time this frame: ",
-				 sleepDuration / 1000,
-				 " us; Elapsed time this frame: ",
-				 (frameTargetTime - sleepDuration) / 1000,
-				 " us.");
+				 sleepDuration.As<Duration::Microseconds>(),
+				 "; Elapsed time this frame: ",
+				 (frameTargetTime - sleepDuration).As<Duration::Microseconds>(),
+				 ".");
 
-		std::this_thread::sleep_for(Time::Duration(sleepDuration));
+		std::this_thread::sleep_for(sleepDuration.As<Duration::Nanoseconds>());
 	}
 
-	return ec;
+	OnDeinit();
+
+	return true;
 }
 
 const CommandLineArguments& IApplication::GetCommandLineArguments() const
@@ -44,45 +48,39 @@ const CommandLineArguments& IApplication::GetCommandLineArguments() const
 	return m_Args;
 }
 
-const IApplicationConfig& IApplication::GetApplicationConfig() const
+const ApplicationConfig& IApplication::GetApplicationConfig() const
 {
 	return m_Config;
 }
 
-int IApplication::Init()
+bool IApplication::Init()
 {
-	int ec = 0;
-
 	// TODO add framework initialization code
-	ec |= InitFromCommandLineArguments();
-	ec |= InitLogging();
+	AssertReturnIf(!InitFromCommandLineArguments(), false);
+	AssertReturnIf(!InitLogging(), false);
 
 	// Call user provided override of the OnInit method
-	ec |= OnInit();
+	AssertReturnIf(!OnInit(), false);
 
-	return ec;
+	return true;
 }
 
-int IApplication::Update(Time::Duration dt)
+void IApplication::Update(Duration dt)
 {
-	int ec = 0;
-
 	// TODO add framework update code - timers, rendering (maybe), etc.
 
 	// Call user provided override of the OnUpdate method
-	ec |= OnUpdate(dt);
-
-	return ec;
+	OnUpdate(dt);
 }
 
-int IApplication::InitFromCommandLineArguments()
+bool IApplication::InitFromCommandLineArguments()
 {
 	m_Config.m_TargetFPS = m_Args.GetOrDefault<int>("fps", Constants::Application::DefaultFPS);
 
-	return 0;
+	return true;
 }
 
-int IApplication::InitLogging() const
+bool IApplication::InitLogging() const
 {
 	g_Logger.SetLogPrefix("");
 	g_Logger.SetLogLevel(ELogLevel::Debug);
@@ -92,5 +90,5 @@ int IApplication::InitLogging() const
 
 	LogInfo("Logging initialized successfully.");
 
-	return 0;
+	return true;
 }

@@ -77,12 +77,15 @@ enum class EUnitOfTime : uint8_t
 	Second,
 	Minute,
 	Hour,
-	Day
+	Day,
+	Week,
+	Month,
+	Year
 };
 
 enum class ETimeStringFormat : uint8_t
 {
-	Default,
-	Timestamp,
+	Default,   //dd.mm.yy HH:MM:SS
+	Timestamp, //yyyymmddHHMMSS
 	Timepoint
 };
