@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/Time/Duration.h"
+#include "Time/Duration.h"
 
 template <typename T>
 concept CppClock = requires {

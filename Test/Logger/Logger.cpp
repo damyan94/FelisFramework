@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "Tests/Utils/Logger/Logger.h"
+#include "Logger/Logger.h"
 
-#include "Utils/Logger/Formatters/LogFormatterConsole.h"
-#include "Utils/Logger/Writers/LogWriterConsole.h"
+#include "Logger/Formatters/LogFormatterConsole.h"
+#include "Logger/Writers/LogWriterConsole.h"
 
 #ifdef FELIS_RUN_TESTS
 

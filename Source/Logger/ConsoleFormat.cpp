@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Utils/Logger/ConsoleFormat.h"
+#include "Logger/ConsoleFormat.h"
 
 static const std::string s_StartSequence("\033[");
 static const std::string s_EndSequence("m");

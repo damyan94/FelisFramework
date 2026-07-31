@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Utils/Logger/Log.h"
+#include "Logger/Log.h"
 
-#include "Utils/Logger/Formatters/ILogFormatter.h"
-#include "Utils/Logger/Writers/ILogWriter.h"
+#include "Logger/Formatters/ILogFormatter.h"
+#include "Logger/Writers/ILogWriter.h"
 
 // A destination for logging stuff
 // Has a Type so we can log only some stuff, an ILogWriter and an ILogFormatter

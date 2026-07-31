@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug",
+            "name": "Debug Example",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Build/Application",
+            "program": "${workspaceFolder}/Build/FelisExample",
             "cwd": "${workspaceFolder}/Build",
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
@@ -16,7 +16,58 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build",
+            "preLaunchTask": "build_debug",
+        },
+        {
+            "name": "Debug Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Build/FelisTest",
+            "cwd": "${workspaceFolder}/Build",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty printing for GDB",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build_debug",
+        },
+        {
+            "name": "Release Example",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Build/FelisExample",
+            "cwd": "${workspaceFolder}/Build",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty printing for GDB",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build_release",
+        },
+        {
+            "name": "Release Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Build/FelisTest",
+            "cwd": "${workspaceFolder}/Build",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty printing for GDB",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build_release",
         }
     ]
 }

@@ -2,9 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build_debug",
             "type": "shell",
-            "command": "cd Build && cmake .. && cmake --build . -j4",
+            "command": "cd Build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DFELIS_BUILD_EXAMPLE=On -DFELIS_BUILD_TEST=On && cmake --build . -j4",
+            "group": {
+                "kind": "build",
+                "cwd": "${workspaceFolder}/Build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "build_release",
+            "type": "shell",
+            "command": "cd Build && cmake .. -DCMAKE_BUILD_TYPE=Release -DFELIS_BUILD_EXAMPLE=On -DFELIS_BUILD_TEST=On && cmake --build . -j4",
             "group": {
                 "kind": "build",
                 "cwd": "${workspaceFolder}/Build",

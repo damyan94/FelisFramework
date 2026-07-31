@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Utils/Time/Duration.h"
+#include "Time/Duration.h"
 
 std::ostream& operator<<(std::ostream& out, Duration dt)
 {

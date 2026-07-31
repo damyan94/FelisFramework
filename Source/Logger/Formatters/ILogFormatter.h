@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/Logger/Log.h"
+#include "Logger/Log.h"
 
 // Interface for all log formatters
 class ILogFormatter

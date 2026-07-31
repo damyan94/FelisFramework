@@ -33,12 +33,12 @@
 #include <typeindex>
 #include <utility>
 
-#include "Utils/Constants.h"
-#include "Utils/Defines.h"
-#include "Utils/Enums.h"
-#include "Utils/Macros.h"
+#include "Constants.h"
+#include "Defines.h"
+#include "Enums.h"
+#include "Macros.h"
 
-#include "Utils/Time/Duration.h"
-#include "Utils/Time/Time.h"
+#include "Time/Duration.h"
+#include "Time/Time.h"
 
-#include "Utils/Logger/Logger.h"
+#include "Logger/Logger.h"

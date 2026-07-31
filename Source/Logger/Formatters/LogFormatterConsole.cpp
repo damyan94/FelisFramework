@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "Utils/Logger/Formatters/LogFormatterConsole.h"
+#include "Logger/Formatters/LogFormatterConsole.h"
 
-#include "Utils/Logger/ConsoleFormat.h"
+#include "Logger/ConsoleFormat.h"
 
 std::string LogFormatterConsole::Format(const LogEntry& log) const
 {
