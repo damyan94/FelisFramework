@@ -11,6 +11,7 @@ endif()
 set(TARGET_NAME Application)
 set(BASE_DIR ${CMAKE_SOURCE_DIR})
 set(SOURCE_DIR ${BASE_DIR}/Source)
+set(TESTS_DIR ${BASE_DIR}/Tests)
 
 project(FelisFramework LANGUAGES CXX)
 
@@ -19,8 +20,14 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
     ${SOURCE_DIR}/*.cpp
 )
 
-add_executable(${TARGET_NAME} ${SOURCE_FILES})
+file(GLOB_RECURSE TESTS_FILES CONFIGURE_DEPENDS
+    ${TESTS_DIR}/*.h
+    ${TESTS_DIR}/*.cpp
+)
 
+add_executable(${TARGET_NAME} ${SOURCE_FILES} ${TESTS_FILES})
+
+target_include_directories(${TARGET_NAME} PUBLIC ${BASE_DIR})
 target_include_directories(${TARGET_NAME} PUBLIC ${SOURCE_DIR})
 target_precompile_headers(${TARGET_NAME} PRIVATE ${SOURCE_DIR}/stdafx.h)
 target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic)

@@ -2,6 +2,8 @@
 
 #include "Examples/ExampleApplication.h"
 
+#include "Tests/Utils/Logger/Logger.h"
+
 ExampleApplication::ExampleApplication(int argC, char** argV)
 	: IApplication(argC, argV)
 {
@@ -18,7 +20,7 @@ bool ExampleApplication::OnInit()
 void ExampleApplication::OnRun()
 {
 	LogDebug(">>> OnRun called");
-	Test::TestLogger();
+	//Test::TestLogger();
 }
 
 void ExampleApplication::OnDeinit()

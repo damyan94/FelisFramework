@@ -80,14 +80,6 @@ inline void Logger::LogFmt(ELogLevel level, std::format_string<Args...> fmt, Arg
 	Log({m_Flags, DateTime::Now(), level, m_Prefix, std::format(fmt, std::forward<Args>(args)...)});
 }
 
-// TODO Move to separate class, file, project
-#ifdef FELIS_RUN_TESTS
-namespace Test
-{
-extern void TestLogger();
-}
-#endif // FELIS_RUN_TESTS
-
 #define FELIS_LOG_CONSOLE(Level, ...) Logger::GetGlobalLogger().Log(Level, __VA_ARGS__)
 
 #define LogCritical(...) FELIS_LOG_CONSOLE(ELogLevel::Critical, __VA_ARGS__)
