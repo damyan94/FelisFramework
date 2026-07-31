@@ -2,30 +2,46 @@
 
 #include "Application/CommandLineArguments.h"
 
-CommandLineArguments::CommandLineArguments(int argC, char** ArgV)
+static const std::string s_ErrorString("<ERROR>");
+
+CommandLineArguments::CommandLineArguments(int argC, char** argV)
 	: m_ArgC(argC),
-	  m_ArgV(ArgV)
+	  m_ArgV(argV),
+	  m_ProgramName(argV[0])
 {
 	ParseArguments();
 }
 
-bool CommandLineArguments::HasArgument(std::string_view arg) const
+int CommandLineArguments::GetArgC() const
+{
+	return m_ArgC;
+}
+
+char** CommandLineArguments::GetArgV() const
+{
+	return m_ArgV;
+}
+
+const std::string& CommandLineArguments::GetProgramName() const
+{
+	return m_ProgramName;
+}
+
+bool CommandLineArguments::HasArgument(const std::string& arg) const
 {
 	return m_ParsedArgs.contains(arg);
 }
 
-const std::string_view& CommandLineArguments::GetArgument(std::string_view arg) const
+const std::string& CommandLineArguments::GetArgument(const std::string& arg) const
 {
-	static const std::string_view err("ERROR");
-
-	AssertReturnIf(!HasArgument(arg), err);
+	AssertReturnIf(!HasArgument(arg), s_ErrorString);
 
 	return m_ParsedArgs.at(arg);
 }
 
 int CommandLineArguments::ParseArguments()
 {
-	for (int i = 0; i < m_ArgC; i++)
+	for (int i = 1; i < m_ArgC; i++)
 	{
 		// TODO implement
 	}

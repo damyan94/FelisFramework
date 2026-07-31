@@ -10,7 +10,8 @@ public:
 	~ExampleApplication() = default;
 
 	bool OnInit();
-	void OnUpdate(Duration dt);
+	void OnRun();
+	void OnDeinit();
 
 private:
 };

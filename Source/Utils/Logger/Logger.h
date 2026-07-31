@@ -6,12 +6,14 @@
 #include "Utils/Logger/Writers/ILogWriter.h"
 
 // A destination for logging stuff
-// Has a Type so we can log only some stuff, a ILogWriter and a ILogFormatter
+// Has a Type so we can log only some stuff, an ILogWriter and an ILogFormatter
 struct LogDestination
 {
 	ELogDestinationType Type;
-	ILogWriterPtr		Writer;
-	ILogFormatterPtr	Formatter;
+
+	// TODO maybe store these centrally in a registry
+	ILogWriterPtr	 Writer;
+	ILogFormatterPtr Formatter;
 };
 
 using LogDestinations = std::vector<LogDestination>;
@@ -25,6 +27,8 @@ public:
 
 	DISABLE_COPY(Logger);
 	DEFAULT_MOVE(Logger);
+
+	static Logger& GetGlobalLogger();
 
 	void SetLogPrefix(const std::string& prefix);
 	void SetLogLevel(ELogLevel level);
@@ -84,9 +88,7 @@ extern void TestLogger();
 }
 #endif // FELIS_RUN_TESTS
 
-extern Logger g_Logger;
-
-#define FELIS_LOG_CONSOLE(Level, ...) g_Logger.Log(Level, __VA_ARGS__)
+#define FELIS_LOG_CONSOLE(Level, ...) Logger::GetGlobalLogger().Log(Level, __VA_ARGS__)
 
 #define LogCritical(...) FELIS_LOG_CONSOLE(ELogLevel::Critical, __VA_ARGS__)
 #define LogError(...) FELIS_LOG_CONSOLE(ELogLevel::Error, __VA_ARGS__)

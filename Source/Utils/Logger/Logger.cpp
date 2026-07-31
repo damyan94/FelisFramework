@@ -2,7 +2,27 @@
 
 #include "Utils/Logger/Logger.h"
 
-Logger g_Logger;
+#include "Utils/Logger/Formatters/LogFormatterConsole.h"
+#include "Utils/Logger/Writers/LogWriterConsole.h"
+
+static Logger CreateGlobalLogger()
+{
+	Logger logger;
+	logger.SetLogPrefix("");
+	logger.SetLogLevel(ELogLevel::Debug);
+	logger.SetLogFlags(LogFlags::All);
+	logger.AddLogDestination(
+		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterConsole>()});
+
+	return logger;
+}
+
+Logger& Logger::GetGlobalLogger()
+{
+	static Logger gLogger{CreateGlobalLogger()};
+
+	return gLogger;
+}
 
 void Logger::SetLogPrefix(const std::string& prefix)
 {
@@ -72,9 +92,6 @@ void Logger::Log(const LogEntry& log)
 }
 
 #ifdef FELIS_RUN_TESTS
-
-#include "Utils/Logger/Formatters/LogFormatterConsole.h"
-#include "Utils/Logger/Writers/LogWriterConsole.h"
 
 // ============================================================
 // Helpers
@@ -409,7 +426,7 @@ void TestLogger()
 		const Time start;
 
 		for (int i = 0; i < 100; ++i)
-			logger.LogFmt(ELogLevel::Debug, "msg {}", i);
+			logger.Log(ELogLevel::Debug, "msg ", i);
 
 		const uint64_t ms = start.GetElapsed().As(EUnitOfTime::Millisecond);
 		const uint64_t us = start.GetElapsed().As(EUnitOfTime::Microsecond);
@@ -422,11 +439,12 @@ void TestLogger()
 	//     Verify the convenience macros route through g_Logger.
 	// --------------------------------------------------------
 	{
-		PrintSection(g_Logger, "10. GLOBAL LOGGER MACROS");
+		auto& gLogger = Logger::GetGlobalLogger();
+		PrintSection(gLogger, "10. GLOBAL LOGGER MACROS");
 
-		const ELogLevel prev = g_Logger.GetLogLevel();
-		g_Logger.SetLogLevel(ELogLevel::Debug);
-		g_Logger.SetLogFlags(LogFlags::All);
+		const ELogLevel prev = gLogger.GetLogLevel();
+		gLogger.SetLogLevel(ELogLevel::Debug);
+		gLogger.SetLogFlags(LogFlags::All);
 
 		LogCritical("macro Critical");
 		LogError("macro Error");
@@ -434,7 +452,7 @@ void TestLogger()
 		LogInfo("macro Info");
 		LogDebug("macro Debug");
 
-		g_Logger.SetLogLevel(prev);
+		gLogger.SetLogLevel(prev);
 	}
 
 	// --------------------------------------------------------

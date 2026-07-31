@@ -9,14 +9,19 @@ ExampleApplication::ExampleApplication(int argC, char** argV)
 
 bool ExampleApplication::OnInit()
 {
-	const auto& cfg = GetApplicationConfig();
-
-	LogDebug("Application initialized with FPS [", cfg.m_TargetFPS, "]");
+	LogDebug(">>> Running ", m_Args.GetProgramName(), "; ", m_Args.GetArgC());
+	LogDebug(">>> OnInit called");
 
 	return true;
 }
 
-void ExampleApplication::OnUpdate(Duration /*dt*/)
+void ExampleApplication::OnRun()
 {
+	LogDebug(">>> OnRun called");
 	Test::TestLogger();
+}
+
+void ExampleApplication::OnDeinit()
+{
+	LogDebug(">>> OnDeinit called");
 }

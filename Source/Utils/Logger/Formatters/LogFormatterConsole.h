@@ -7,12 +7,12 @@
 class LogFormatterConsole final : public ILogFormatter
 {
 public:
-	LogFormatterConsole()		 = default;
-	~LogFormatterConsole() final = default;
+	LogFormatterConsole()  = default;
+	~LogFormatterConsole() = default;
 
-	std::string Format(const LogEntry& log) const final;
+	std::string Format(const LogEntry& log) const;
 
-protected:
+private:
 	void FormatTime(const DateTime& time, std::stringstream& stream) const;
 	void FormatLevel(ELogLevel level, std::stringstream& stream) const;
 	void FormatPrefix(const std::string& prefix, std::stringstream& stream) const;

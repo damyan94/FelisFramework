@@ -1,20 +1,27 @@
 #pragma once
 
+using ParsedArgumentsContainer = std::unordered_map<std::string, std::string>;
+
 // Command line arguments utility
 class CommandLineArguments
 {
 public:
-	CommandLineArguments(int argC, char** ArgV);
+	explicit CommandLineArguments(int argC, char** argV);
 	~CommandLineArguments() = default;
 
-	bool					HasArgument(std::string_view arg) const;
-	const std::string_view& GetArgument(std::string_view arg) const;
+	int	   GetArgC() const;
+	char** GetArgV() const;
+
+	const std::string& GetProgramName() const;
+
+	bool			   HasArgument(const std::string& arg) const;
+	const std::string& GetArgument(const std::string& arg) const;
 
 	template <typename T>
-	T GetOrDefault(std::string_view arg, T def) const;
+	T GetOrDefault(const std::string& arg, T def) const;
 
 	template <typename T>
-	T GetArgumentAs(std::string_view arg) const;
+	T GetArgumentAs(const std::string& arg) const;
 
 private:
 	int ParseArguments();
@@ -23,29 +30,46 @@ private:
 	int	   m_ArgC;
 	char** m_ArgV;
 
-	std::unordered_map<std::string_view, std::string_view> m_ParsedArgs;
+	const std::string		 m_ProgramName;
+	ParsedArgumentsContainer m_ParsedArgs;
 };
 
 template <typename T>
-inline T CommandLineArguments::GetOrDefault(std::string_view arg, T def) const
+inline T CommandLineArguments::GetOrDefault(const std::string& arg, T def) const
 {
-	ReturnIf(HasArgument(arg), GetArgumentAs<T>(arg));
+	ReturnIf(!HasArgument(arg), def);
 
-	return def;
+	return GetArgumentAs<T>(arg);
 }
 
 template <>
-inline int CommandLineArguments::GetArgumentAs(std::string_view arg) const
+inline bool CommandLineArguments::GetArgumentAs(const std::string& arg) const
 {
-	ReturnIf(HasArgument(arg), std::stoi(GetArgument(arg).data()));
+	ReturnIf(!HasArgument(arg), bool());
 
-	return int();
+	return bool(std::stoi(GetArgument(arg)));
 }
 
 template <>
-inline bool CommandLineArguments::GetArgumentAs(std::string_view arg) const
+inline int CommandLineArguments::GetArgumentAs(const std::string& arg) const
 {
-	ReturnIf(HasArgument(arg), bool(std::stoi(GetArgument(arg).data())));
+	ReturnIf(!HasArgument(arg), int());
 
-	return bool();
+	return std::stoi(GetArgument(arg));
+}
+
+template <>
+inline float CommandLineArguments::GetArgumentAs(const std::string& arg) const
+{
+	ReturnIf(!HasArgument(arg), float());
+
+	return std::stof(GetArgument(arg));
+}
+
+template <>
+inline double CommandLineArguments::GetArgumentAs(const std::string& arg) const
+{
+	ReturnIf(!HasArgument(arg), double());
+
+	return std::stof(GetArgument(arg));
 }

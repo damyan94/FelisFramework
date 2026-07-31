@@ -2,41 +2,31 @@
 
 #include "Application/CommandLineArguments.h"
 
-struct ApplicationConfig
-{
-	int m_TargetFPS = Constants::Application::DefaultFPS;
-};
-
 // An interface for the application main class
-// Initializes the application and runs the main loop
-// Contains the OnInit and OnUpdate methods which can be overriden
+// Initializes, runs and deinitializes the application
+// Contains the OnInit, OnRun and OnDeinit methods which can be overriden
 class IApplication
 {
 public:
 	IApplication(int argC, char** argV);
 	virtual ~IApplication() = default;
 
-	virtual bool OnInit()				   = 0;
-	virtual void OnUpdate(Duration /*dt*/) = 0;
-	virtual void OnDeinit();
-
 	bool RunApplication();
 
+protected:
+	virtual bool OnInit()	= 0;
+	virtual void OnRun()	= 0;
+	virtual void OnDeinit() = 0;
+
 	const CommandLineArguments& GetCommandLineArguments() const;
-	const ApplicationConfig&	GetApplicationConfig() const;
 
 private:
 	bool Init();
-	void Update(Duration dt);
+	void Run();
+	void Deinit();
 
 	bool InitFromCommandLineArguments();
 
-	bool InitLogging() const;
-
-private:
+protected:
 	CommandLineArguments m_Args;
-	ApplicationConfig	 m_Config;
-
-	bool m_ExitRequested;
-	Time m_Time;
 };
