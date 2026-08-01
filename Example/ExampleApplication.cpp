@@ -2,6 +2,9 @@
 
 #include "ExampleApplication.h"
 
+#include "Time/Timer.h"
+#include "Time/TimerManager.h"
+
 ExampleApplication::ExampleApplication(int argC, char** argV)
 	: IApplication(argC, argV)
 {
@@ -18,6 +21,22 @@ bool ExampleApplication::OnInit()
 void ExampleApplication::OnRun()
 {
 	LogDebug(">>> OnRun called");
+
+	Timer t;
+	int	  ticks = 0;
+	t.Start(ETimerType::Pulse,
+			Duration::Seconds(2),
+			[&ticks]
+			{
+				LogInfo("Timer tick ", ticks);
+				ticks++;
+			});
+
+	while (ticks <= 5)
+	{
+		TimerManager::Instance().Update(Duration::Milliseconds(16));
+		std::this_thread::sleep_for(Duration::Milliseconds(16));
+	}
 }
 
 void ExampleApplication::OnDeinit()

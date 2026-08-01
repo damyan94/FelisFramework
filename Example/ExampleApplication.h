@@ -9,6 +9,7 @@ public:
 	ExampleApplication(int argC, char** argV);
 	~ExampleApplication() = default;
 
+private:
 	bool OnInit();
 	void OnRun();
 	void OnDeinit();
