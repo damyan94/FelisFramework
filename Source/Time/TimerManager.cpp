@@ -40,7 +40,7 @@ TimerId TimerManager::Start(ETimerType timerType, Duration interval, TimerCallba
 	timerData->TimerType  = timerType;
 	timerData->TimerState = ETimerState::Running;
 	timerData->Interval	  = interval;
-	timerData->Elapsed	  = Duration::Nanoseconds(0);
+	timerData->Elapsed	  = Duration::Zero;
 	timerData->Callback	  = std::move(callback);
 
 	return timerData->Id;
@@ -53,8 +53,8 @@ void TimerManager::Stop(TimerId id)
 
 	timerData->TimerType  = ETimerType::Oneshot;
 	timerData->TimerState = ETimerState::Free;
-	timerData->Interval	  = Duration::Nanoseconds(0);
-	timerData->Elapsed	  = Duration::Nanoseconds(0);
+	timerData->Interval	  = Duration::Zero;
+	timerData->Elapsed	  = Duration::Zero;
 	timerData->Callback	  = nullptr;
 
 	m_FreeIndices.push_back(id.Index);
@@ -82,32 +82,88 @@ void TimerManager::Resume(TimerId id)
 
 void TimerManager::Restart(TimerId id)
 {
-	TimerData* timerData = GetTimerData(id);
+	auto* timerData = GetTimerData(id);
 	ReturnIf(!timerData);
 
 	timerData->TimerState = ETimerState::Running;
-	timerData->Elapsed	  = Duration::Nanoseconds(0);
+	timerData->Elapsed	  = Duration::Zero;
 }
 
-bool TimerManager::IsRunning(TimerId id)
+bool TimerManager::IsRunning(TimerId id) const
 {
-	TimerData* timerData = GetTimerData(id);
+	const TimerData* timerData = GetTimerData(id);
 	ReturnIf(!timerData, false);
 
 	return timerData->TimerState == ETimerState::Running;
 }
 
-bool TimerManager::IsPaused(TimerId id)
+bool TimerManager::IsPaused(TimerId id) const
 {
-	TimerData* timerData = GetTimerData(id);
+	const TimerData* timerData = GetTimerData(id);
 	ReturnIf(!timerData, false);
 
 	return timerData->TimerState == ETimerState::Paused;
 }
 
-bool TimerManager::IsValid(TimerId id)
+bool TimerManager::IsValid(TimerId id) const
 {
 	return GetTimerData(id) != nullptr;
+}
+
+ETimerType TimerManager::GetTimerType(TimerId id) const
+{
+	const TimerData* timerData = GetTimerData(id);
+	AssertReturnIf(!timerData, ETimerType::Oneshot);
+
+	return timerData->TimerType;
+}
+
+ETimerState TimerManager::GetTimerState(TimerId id) const
+{
+	const TimerData* timerData = GetTimerData(id);
+	ReturnIf(!timerData, ETimerState::Free);
+
+	return timerData->TimerState;
+}
+
+Duration TimerManager::GetInterval(TimerId id) const
+{
+	const TimerData* timerData = GetTimerData(id);
+	ReturnIf(!timerData, Duration::Zero);
+
+	return timerData->Interval;
+}
+
+Duration TimerManager::GetRemaining(TimerId id) const
+{
+	const TimerData* timerData = GetTimerData(id);
+	ReturnIf(!timerData, Duration::Zero);
+
+	return timerData->Interval - timerData->Elapsed;
+}
+
+Duration TimerManager::GetElapsed(TimerId id) const
+{
+	const TimerData* timerData = GetTimerData(id);
+	ReturnIf(!timerData, Duration::Zero);
+
+	return timerData->Elapsed;
+}
+
+float TimerManager::GetProgress(TimerId id) const
+{
+	const TimerData* timerData = GetTimerData(id);
+	ReturnIf(!timerData, 0.0f);
+
+	return (float)timerData->Elapsed.As(EUnitOfTime::Nanosecond) /
+		   (float)timerData->Interval.As(EUnitOfTime::Nanosecond);
+}
+
+void TimerManager::Update()
+{
+	const auto dt = m_Clock.GetElapsed();
+	m_Clock.Reset();
+	Update(dt);
 }
 
 void TimerManager::Update(Duration dt)
@@ -120,27 +176,10 @@ void TimerManager::Update(Duration dt)
 
 		ContinueIf(timerData.Elapsed < timerData.Interval);
 
-		if (timerData.Callback)
-		{
-			m_CallbacksToExecute.emplace_back(timerData.Callback);
-		}
-
-		if (timerData.TimerType == ETimerType::Pulse)
-		{
-			timerData.Elapsed -= timerData.Interval;
-		}
-		else
-		{
-			Stop(timerData.Id);
-		}
+		OnTimerTick(timerData);
 	}
 
-	for (auto& callback : m_CallbacksToExecute)
-	{
-		callback();
-	}
-
-	m_CallbacksToExecute.clear();
+	ExecuteCallbacks();
 }
 
 TimerData* TimerManager::GetTimerData(TimerId id)
@@ -153,4 +192,43 @@ TimerData* TimerManager::GetTimerData(TimerId id)
 	ReturnIf(timerData.TimerState == ETimerState::Free, nullptr);
 
 	return &timerData;
+}
+
+const TimerData* TimerManager::GetTimerData(TimerId id) const
+{
+	ReturnIf(id.Index >= m_Timers.size(), nullptr);
+
+	const auto& timerData = m_Timers[id.Index];
+
+	ReturnIf(timerData.Id.Generation != id.Generation, nullptr);
+	ReturnIf(timerData.TimerState == ETimerState::Free, nullptr);
+
+	return &timerData;
+}
+
+void TimerManager::ExecuteCallbacks()
+{
+	for (auto& callback : m_CallbacksToExecute)
+	{
+		callback();
+	}
+
+	m_CallbacksToExecute.clear();
+}
+
+void TimerManager::OnTimerTick(TimerData& timerData)
+{
+	if (timerData.Callback)
+	{
+		m_CallbacksToExecute.emplace_back(timerData.Callback);
+	}
+
+	if (timerData.TimerType == ETimerType::Pulse)
+	{
+		timerData.Elapsed -= timerData.Interval;
+	}
+	else
+	{
+		Stop(timerData.Id);
+	}
 }

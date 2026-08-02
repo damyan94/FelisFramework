@@ -21,16 +21,29 @@ public:
 	void Resume(TimerId id);
 	void Restart(TimerId id);
 
-	bool IsRunning(TimerId id);
-	bool IsPaused(TimerId id);
-	bool IsValid(TimerId id);
+	bool IsRunning(TimerId id) const;
+	bool IsPaused(TimerId id) const;
+	bool IsValid(TimerId id) const;
 
+	ETimerType	GetTimerType(TimerId id) const;
+	ETimerState GetTimerState(TimerId id) const;
+	Duration	GetInterval(TimerId id) const;
+	Duration	GetRemaining(TimerId id) const;
+	Duration	GetElapsed(TimerId id) const;
+	float		GetProgress(TimerId id) const;
+
+	void Update();
 	void Update(Duration dt);
 
 private:
-	TimerData* GetTimerData(TimerId id);
+	TimerData*		 GetTimerData(TimerId id);
+	const TimerData* GetTimerData(TimerId id) const;
+
+	void ExecuteCallbacks();
+	void OnTimerTick(TimerData& timerData);
 
 private:
+	Time					   m_Clock;
 	std::vector<TimerData>	   m_Timers;
 	std::vector<size_t>		   m_FreeIndices;
 	std::vector<TimerCallback> m_CallbacksToExecute;

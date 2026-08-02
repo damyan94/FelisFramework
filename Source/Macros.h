@@ -3,14 +3,23 @@
 #define _Stringify_(X) #X
 #define _Stringify(X) _Stringify_(X)
 
+#if defined NDEBUG
+#define _DebugBreak
+
+#else // !NDEBUG
 #if defined(_WIN32)
 #define _DebugBreak __debugbreak()
+
 #elif defined(__linux__)
 #define _DebugBreak __asm__("int3")
+
 #else
 #define _DebugBreak #warning Debug break not implemented for this platform
 #endif
 
+#endif // NDEBUG
+
+// TODO Maybe use std::source_location::current
 #define _DebugBreakInfo(_Reason) "File: " __FILE__ "; Line: " _Stringify(__LINE__) "; Reason: " _Stringify(_Reason)
 
 #define Assert(...)                                                                                                    \

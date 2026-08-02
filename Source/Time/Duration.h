@@ -40,8 +40,10 @@ public:
 
 	int64_t As(EUnitOfTime unit) const;
 
+	static Duration Zero;
+
 private:
-	Nanoseconds m_Value;
+	Nanoseconds m_Value{};
 };
 
 template <typename Rep, typename Period>

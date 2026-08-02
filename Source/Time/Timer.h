@@ -19,12 +19,12 @@ enum class ETimerState : uint8_t
 
 struct TimerId
 {
-	uint32_t Index		= UINT32_MAX;
-	uint32_t Generation = 0;
+	size_t Index	  = SIZE_MAX;
+	size_t Generation = 0;
 
 	bool IsValid() const
 	{
-		return Index != UINT32_MAX && Generation != 0;
+		return Index != SIZE_MAX && Generation != 0;
 	}
 };
 
@@ -35,7 +35,9 @@ public:
 	~Timer();
 
 	DISABLE_COPY(Timer);
-	DEFAULT_MOVE(Timer);
+
+	Timer(Timer&& other);
+	Timer& operator=(Timer&& other);
 
 	void Start(ETimerType timerType, Duration interval, TimerCallback callback);
 	void Stop();
@@ -46,6 +48,16 @@ public:
 	bool IsRunning() const;
 	bool IsPaused() const;
 	bool IsValid() const;
+
+	ETimerType	GetTimerType() const;
+	ETimerState GetTimerState() const;
+	Duration	GetInterval() const;
+	Duration	GetRemaining() const;
+	Duration	GetElapsed() const;
+	float		GetProgress() const;
+
+	TimerManager* GetManager();
+	TimerId		  GetId() const;
 
 private:
 	TimerManager* m_Manager;

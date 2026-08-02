@@ -42,6 +42,8 @@ if(FELIS_BUILD_EXAMPLE)
 
     add_executable(${EXAMPLE_TARGET} ${EXAMPLE_SOURCES})
 
+    target_include_directories(${EXAMPLE_TARGET} PUBLIC ${EXAMPLE_DIR})
+
     target_link_libraries(${EXAMPLE_TARGET} PRIVATE ${FELIS_TARGET})
 endif()
 
@@ -56,6 +58,8 @@ if(FELIS_BUILD_TEST)
     )
 
     add_executable(${TEST_TARGET} ${TEST_SOURCES})
+
+    target_include_directories(${TEST_TARGET} PUBLIC ${TEST_DIR})
 
     target_link_libraries(${TEST_TARGET} PRIVATE ${FELIS_TARGET})
 endif()
