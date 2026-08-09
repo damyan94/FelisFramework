@@ -5,6 +5,27 @@
 #include "Time/Timer.h"
 #include "Time/TimerManager.h"
 
+#include "Error/Error.h"
+#include "Error/FelisError.h"
+
+enum class MyErrorEnum
+{
+	a,
+	b,
+	c,
+	Count
+};
+
+template <>
+const char* Error<MyErrorEnum>::s_Type = "My error type";
+
+template <>
+ErrorRegistry<MyErrorEnum> Error<MyErrorEnum>::s_Registry({
+	ErrorData{"a"},
+	ErrorData{"b"},
+	//ErrorData{"c"},
+});
+
 ExampleApplication::ExampleApplication(int argC, char** argV)
 	: IApplication(argC, argV)
 {
@@ -14,6 +35,19 @@ bool ExampleApplication::OnInit()
 {
 	LogDebug(">>> Running ", m_Args.GetProgramName(), "; ", m_Args.GetArgC());
 	LogDebug(">>> OnInit called");
+
+	Error e(EFelisErrorCode::Unknown);
+	LogError(e.GetErrorData().Text, "; ", TimeFormat::ToString(e.GetTimestamp()));
+
+	LogDebug(TimeFormat::ToString(DateTime::Now(), ETimeStringFormat::Timepoint));
+
+	LogDebug(e);
+
+	e = Error(EFelisErrorCode::Success);
+	LogDebug(e);
+
+	Error err(MyErrorEnum::c);
+	LogDebug(err);
 
 	return true;
 }

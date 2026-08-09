@@ -49,7 +49,7 @@ std::string LogFormatterConsole::Format(const LogEntry& log) const
 
 void LogFormatterConsole::FormatTime(const DateTime& time, std::stringstream& stream) const
 {
-	stream << '[' << TimeFormat::ToString(time, ETimeStringFormat::Default) << "] ";
+	stream << '[' << time << "] ";
 }
 
 void LogFormatterConsole::FormatLevel(ELogLevel level, std::stringstream& stream) const

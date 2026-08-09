@@ -19,9 +19,11 @@ public:
 	BasicTime();
 	explicit BasicTime(Timepoint tp);
 
+	DEFAULT_COPY_AND_MOVE(BasicTime);
+
 	auto operator<=>(const BasicTime& rhs) const = default;
 
-	Duration& operator-(const BasicTime& rhs);
+	Duration operator-(const BasicTime& rhs);
 
 	BasicTime operator+(const Duration& d) const;
 	BasicTime operator-(const Duration& d) const;
@@ -36,7 +38,7 @@ public:
 	Duration		 GetElapsed() const;
 	const Timepoint& GetTimepoint() const;
 
-private:
+protected:
 	Timepoint m_Start;
 };
 
@@ -53,7 +55,7 @@ inline BasicTime<ClockType>::BasicTime(Timepoint tp)
 }
 
 template <CppClock ClockType>
-inline Duration& BasicTime<ClockType>::operator-(const BasicTime& rhs)
+inline Duration BasicTime<ClockType>::operator-(const BasicTime& rhs)
 {
 	return m_Start - rhs.m_Start;
 }
@@ -61,13 +63,13 @@ inline Duration& BasicTime<ClockType>::operator-(const BasicTime& rhs)
 template <CppClock ClockType>
 inline BasicTime<ClockType> BasicTime<ClockType>::operator+(const Duration& d) const
 {
-	return m_Start + d.As<Duration::Nanoseconds>();
+	return BasicTime<ClockType>(m_Start + d.As<Duration::Nanoseconds>());
 }
 
 template <CppClock ClockType>
 inline BasicTime<ClockType> BasicTime<ClockType>::operator-(const Duration& d) const
 {
-	return m_Start - d.As<Duration::Nanoseconds>();
+	return BasicTime<ClockType>(m_Start - d.As<Duration::Nanoseconds>());
 }
 
 template <CppClock ClockType>
@@ -87,7 +89,7 @@ inline BasicTime<ClockType>& BasicTime<ClockType>::operator-=(const Duration& d)
 template <CppClock ClockType>
 inline BasicTime<ClockType> BasicTime<ClockType>::Now()
 {
-	return BasicTime<ClockType>(Clock::now());
+	return BasicTime<ClockType>();
 }
 
 template <CppClock ClockType>
@@ -119,3 +121,5 @@ namespace TimeFormat
 {
 std::string ToString(DateTime dateTime, ETimeStringFormat format = ETimeStringFormat::Default);
 } // namespace TimeFormat
+
+extern std::ostream& operator<<(std::ostream& os, DateTime dateTime);

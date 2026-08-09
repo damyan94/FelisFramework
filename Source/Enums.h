@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+template <typename T>
+concept CppEnum = std::is_enum_v<T>;
+
 /**
  * General requirements for enums:
  * - enums should be signed
@@ -80,7 +83,8 @@ enum class EUnitOfTime : uint8_t
 	Day,
 	Week,
 	Month,
-	Year
+	Year,
+	Count
 };
 
 enum class ETimeStringFormat : uint8_t

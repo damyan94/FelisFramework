@@ -1,5 +1,9 @@
 #pragma once
 
+template <typename T>
+concept ChronoDuration =
+	std::is_same_v<std::remove_cvref_t<T>, std::chrono::duration<typename T::rep, typename T::period>>;
+
 // A duration of time, a time interval if you will
 class Duration
 {
@@ -35,7 +39,7 @@ public:
 	Duration& operator+=(const Duration& rhs);
 	Duration& operator-=(const Duration& rhs);
 
-	template <typename T>
+	template <ChronoDuration T>
 	T As() const;
 
 	int64_t As(EUnitOfTime unit) const;
@@ -52,7 +56,7 @@ inline Duration::Duration(std::chrono::duration<Rep, Period> d)
 {
 }
 
-template <typename T>
+template <ChronoDuration T>
 inline T Duration::As() const
 {
 	return std::chrono::duration_cast<T>(m_Value);

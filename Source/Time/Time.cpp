@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "Time.h"
 #include "Time/Time.h"
 
 #define FELIS_USE_CHRONO_FORMATTER
@@ -47,3 +48,10 @@ std::string ToString(DateTime dateTime, ETimeStringFormat format)
 #endif
 }
 } // namespace TimeFormat
+
+std::ostream& operator<<(std::ostream& os, DateTime dateTime)
+{
+	os << TimeFormat::ToString(dateTime, ETimeStringFormat::Default);
+
+	return os;
+}
