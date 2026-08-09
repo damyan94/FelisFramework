@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "Time.h"
 #include "Time/Time.h"
 
 #define FELIS_USE_CHRONO_FORMATTER

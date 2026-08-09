@@ -2,6 +2,8 @@
 
 #include "Error/ErrorTest.h"
 #include "Logger/LoggerTest.h"
+#include "Time/DurationTest.h"
+#include "Time/TimeTest.h"
 #include "Time/TimerTest.h"
 
 int main(int argC, char** argV)

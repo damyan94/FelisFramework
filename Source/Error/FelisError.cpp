@@ -3,6 +3,7 @@
 #include "Error/FelisError.h"
 
 #include "Error/Error.h"
+
 template <>
 const char* Error<EFelisErrorCode>::s_Type = "FelisFramework error";
 

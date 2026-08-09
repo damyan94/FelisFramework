@@ -2,5 +2,5 @@
 
 namespace Test
 {
-extern void TestTimers();
+extern void TestDuration();
 }
