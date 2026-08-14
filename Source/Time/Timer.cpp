@@ -33,7 +33,7 @@ Timer& Timer::operator=(Timer&& other)
 
 void Timer::Start(ETimerType timerType, Duration interval, TimerCallback callback)
 {
-	AssertReturnIf(IsRunning() && "Attempting to start and already running timer.");
+	AssertReturnIf((IsValid() || IsRunning() || IsPaused()) && "Attempting to create an already existent timer.");
 
 	m_Id = m_Manager->Start(timerType, interval, callback);
 }

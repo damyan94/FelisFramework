@@ -25,5 +25,8 @@ inline constexpr int MinutesInDay  = MinutesInHour * HoursInDay;
 inline constexpr int MinutesInYear = MinutesInDay * DaysInYear;
 
 inline constexpr int HoursInYear = HoursInDay * DaysInYear;
+
+inline constexpr int MinTimerIntervalMilliseconds = 10;
+inline constexpr int MaxTimerIntervalYears		  = 1;
 } // namespace Time
 } // namespace Constants

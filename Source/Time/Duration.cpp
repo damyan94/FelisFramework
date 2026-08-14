@@ -2,7 +2,7 @@
 
 #include "Time/Duration.h"
 
-Duration Duration::Zero = Duration::Nanoseconds(0);
+const Duration Duration::Zero = Duration::Nanoseconds(0);
 
 std::ostream& operator<<(std::ostream& out, Duration dt)
 {

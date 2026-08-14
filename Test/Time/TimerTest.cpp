@@ -86,6 +86,26 @@ void TestPulseFiresRepeatedly(TestReporter& r)
 	t.Stop();
 }
 
+/*void TestPulseCatchesUpAfterLongUpdate(TestReporter& r)
+{
+	auto& tm = TimerManager::Instance();
+
+	int	  tickCount = 0;
+	Timer t;
+	t.Start(ETimerType::Pulse, Timer::MinDuration, [&tickCount] { ++tickCount; });
+
+	tm.Update(Duration::Milliseconds(35));
+
+	TEST_CHECK(r, tickCount == 3);
+	TEST_CHECK(r, t.GetElapsed() == Duration::Milliseconds(5));
+
+	tm.Update(Duration::Milliseconds(5));
+
+	TEST_CHECK(r, tickCount == 4);
+
+	t.Stop();
+}*/
+
 void TestPauseStopsElapsedAccumulation(TestReporter& r)
 {
 	auto& tm = TimerManager::Instance();
@@ -296,6 +316,7 @@ void TestTimers()
 	TestOneshotDoesNotFireEarly(r);
 	TestOneshotFiresOnceAndStops(r);
 	TestPulseFiresRepeatedly(r);
+	//TestPulseCatchesUpAfterLongUpdate(r);
 	TestPauseStopsElapsedAccumulation(r);
 	TestRestartResetsElapsed(r);
 	TestGettersReportCorrectValues(r);

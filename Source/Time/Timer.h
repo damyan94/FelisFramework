@@ -59,6 +59,10 @@ public:
 	TimerManager* GetManager();
 	TimerId		  GetId() const;
 
+public:
+	static constexpr Duration MinDuration = Duration::Milliseconds(Constants::Time::MinTimerIntervalMilliseconds);
+	static constexpr Duration MaxDuration = Duration::Years(Constants::Time::MaxTimerIntervalYears);
+
 private:
 	TimerManager* m_Manager;
 	TimerId		  m_Id;

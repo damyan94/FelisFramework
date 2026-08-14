@@ -23,7 +23,7 @@ public:
 
 	auto operator<=>(const BasicTime& rhs) const = default;
 
-	Duration operator-(const BasicTime& rhs);
+	Duration operator-(const BasicTime& rhs) const;
 
 	BasicTime operator+(const Duration& d) const;
 	BasicTime operator-(const Duration& d) const;
@@ -55,7 +55,7 @@ inline BasicTime<ClockType>::BasicTime(Timepoint tp)
 }
 
 template <CppClock ClockType>
-inline Duration BasicTime<ClockType>::operator-(const BasicTime& rhs)
+inline Duration BasicTime<ClockType>::operator-(const BasicTime& rhs) const
 {
 	return m_Start - rhs.m_Start;
 }

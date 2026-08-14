@@ -11,10 +11,30 @@ TimerManager& TimerManager::Instance()
 
 TimerId TimerManager::Start(ETimerType timerType, Duration interval, TimerCallback callback)
 {
+	if (interval < Timer::MinDuration || interval > Timer::MaxDuration)
+	{
+		LogError("Timer interval ",
+				 interval,
+				 " is not in the range of [",
+				 Timer::MinDuration,
+				 " - ",
+				 Timer::MaxDuration,
+				 "]; clamping it.");
+		interval = std::clamp(interval, Timer::MinDuration, Timer::MaxDuration);
+	}
+
 	TimerData* timerData = nullptr;
 	size_t	   index;
 
-	if (!m_FreeIndices.empty())
+	if (m_FreeIndices.empty())
+	{
+		index = m_Timers.size();
+		m_Timers.emplace_back();
+
+		timerData				 = &m_Timers.back();
+		timerData->Id.Generation = 1;
+	}
+	else
 	{
 		index = m_FreeIndices.back();
 		m_FreeIndices.pop_back();
@@ -26,14 +46,6 @@ TimerId TimerManager::Start(ETimerType timerType, Duration interval, TimerCallba
 		{
 			++timerData->Id.Generation;
 		}
-	}
-	else
-	{
-		index = m_Timers.size();
-		m_Timers.emplace_back();
-
-		timerData				 = &m_Timers.back();
-		timerData->Id.Generation = 1;
 	}
 
 	timerData->Id.Index	  = index;
@@ -177,6 +189,15 @@ void TimerManager::Update(Duration dt)
 		ContinueIf(timerData.Elapsed < timerData.Interval);
 
 		OnTimerTick(timerData);
+
+		// TODO Think about implementing a catch-up mechanism
+		/*static constexpr int maxCallbacksToExecute = 10;
+		int callbacksExecuted	   = 0;
+
+		while (timerData.TimerState == ETimerState::Running && timerData.Elapsed >= timerData.Interval)
+		{
+			OnTimerTick(timerData);
+		}*/
 	}
 
 	ExecuteCallbacks();

@@ -25,7 +25,7 @@ public:
 	Duration() = default;
 
 	template <typename Rep, typename Period>
-	Duration(std::chrono::duration<Rep, Period> d);
+	constexpr Duration(std::chrono::duration<Rep, Period> d);
 
 	// Would this work?
 	operator std::chrono::nanoseconds() const;
@@ -44,14 +44,14 @@ public:
 
 	int64_t As(EUnitOfTime unit) const;
 
-	static Duration Zero;
+	static const Duration Zero;
 
 private:
 	Nanoseconds m_Value{};
 };
 
 template <typename Rep, typename Period>
-inline Duration::Duration(std::chrono::duration<Rep, Period> d)
+inline constexpr Duration::Duration(std::chrono::duration<Rep, Period> d)
 	: m_Value(std::chrono::duration_cast<Nanoseconds>(d))
 {
 }
