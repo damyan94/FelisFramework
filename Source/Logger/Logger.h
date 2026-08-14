@@ -18,7 +18,7 @@ struct LogDestination
 
 using LogDestinations = std::vector<LogDestination>;
 
-// A class that formats and writes logs to LogDestinations using their ILogFormatters and ILogWriters
+// Formats and writes logs to LogDestinations using their ILogFormatters and ILogWriters
 class Logger
 {
 public:

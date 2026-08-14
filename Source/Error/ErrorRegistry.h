@@ -23,7 +23,7 @@ public:
 	const ErrorData& GetErrorData(T errorCode) const;
 
 private:
-	Container m_ErrorData;
+	const Container m_ErrorData;
 };
 
 template <CppEnum T>

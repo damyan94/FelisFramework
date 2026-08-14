@@ -20,7 +20,7 @@ template <>
 const char* Error<MyErrorEnum>::s_Type = "My error type";
 
 template <>
-ErrorRegistry<MyErrorEnum> Error<MyErrorEnum>::s_Registry({
+const ErrorRegistry<MyErrorEnum> Error<MyErrorEnum>::s_Registry({
 	ErrorData{"a"},
 	ErrorData{"b"},
 	//ErrorData{"c"},

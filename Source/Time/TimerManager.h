@@ -3,6 +3,12 @@
 #include "Time/Timer.h"
 #include "Time/TimerData.h"
 
+// Manages timers and executes timer callbacks
+// Timers access its functionality via the TimerId
+// The Update method must be called from the main thread
+//
+// Not thread safe. In future, consider adding thread safe commands queue
+// or have a separate TimerManager for each thread, remembering to call Update
 class TimerManager
 {
 public:

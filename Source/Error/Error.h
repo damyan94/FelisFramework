@@ -34,7 +34,7 @@ private:
 
 	static const char* s_Type;
 
-	static ErrorRegistry<T> s_Registry;
+	static const ErrorRegistry<T> s_Registry;
 };
 
 template <CppEnum T>

@@ -26,7 +26,7 @@ template <>
 const char* Error<ETestErrorCode>::s_Type = "TestError";
 
 template <>
-ErrorRegistry<ETestErrorCode> Error<ETestErrorCode>::s_Registry({
+const ErrorRegistry<ETestErrorCode> Error<ETestErrorCode>::s_Registry({
 	ErrorData{"Alpha"},
 	ErrorData{"Beta"},
 	ErrorData{"Gamma"},

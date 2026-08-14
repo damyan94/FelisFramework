@@ -2,6 +2,7 @@
 
 #include "Time/Timer.h"
 
+// Contains information about a given Timer, identified by its TimerId
 struct TimerData
 {
 	TimerId		  Id;

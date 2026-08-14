@@ -2,6 +2,8 @@
 
 #include "Logger/Log.h"
 
+// Interface for all log writers
+// Writers should be thread safe
 class ILogWriter
 {
 public:

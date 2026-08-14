@@ -1,7 +1,5 @@
 #pragma once
 
-class TimerManager;
-
 using TimerCallback = std::function<void()>;
 
 enum class ETimerType : uint8_t
@@ -17,6 +15,7 @@ enum class ETimerState : uint8_t
 	Paused
 };
 
+// Used as an identifier to acces TimerData from the TimerManager
 struct TimerId
 {
 	size_t Index	  = SIZE_MAX;
@@ -28,6 +27,8 @@ struct TimerId
 	}
 };
 
+// A timer, can be started, paused, stopped and queried
+// Accesses TimerManager functionality via the TimerId
 class Timer
 {
 public:
@@ -56,14 +57,12 @@ public:
 	Duration	GetElapsed() const;
 	float		GetProgress() const;
 
-	TimerManager* GetManager();
-	TimerId		  GetId() const;
+	TimerId GetId() const;
 
 public:
 	static constexpr Duration MinDuration = Duration::Milliseconds(Constants::Time::MinTimerIntervalMilliseconds);
 	static constexpr Duration MaxDuration = Duration::Years(Constants::Time::MaxTimerIntervalYears);
 
 private:
-	TimerManager* m_Manager;
-	TimerId		  m_Id;
+	TimerId m_Id;
 };
