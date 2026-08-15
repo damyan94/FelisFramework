@@ -12,4 +12,5 @@ const ErrorRegistry<ECommandLineArgumentErrorCode> Error<ECommandLineArgumentErr
 	ErrorData{"Invalid argument value"},
 	ErrorData{"Argument value is out of range"},
 	ErrorData{"Positional argument index is out of range"},
+	ErrorData{"Unexpected command-line argument"},
 });

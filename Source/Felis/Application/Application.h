@@ -18,6 +18,7 @@ protected:
 	virtual ApplicationError OnRun()	= 0;
 	virtual ApplicationError OnDeinit() = 0;
 
+	CommandLineArguments&		GetCommandLineArguments();
 	const CommandLineArguments& GetCommandLineArguments() const;
 
 private:

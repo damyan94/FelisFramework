@@ -9,6 +9,7 @@ enum class ECommandLineArgumentErrorCode : int32_t
 	InvalidValue,
 	ValueOutOfRange,
 	PositionalArgumentOutOfRange,
+	UnexpectedArgument,
 	Count
 };
 

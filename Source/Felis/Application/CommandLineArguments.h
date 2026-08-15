@@ -2,6 +2,8 @@
 
 #include "Felis/Application/CommandLineArgumentsError.h"
 
+using AllowedArgumentsContainer	   = std::set<std::string>;
+using NonAllowedArgumentsContainer = std::set<std::string>;
 using ParsedArgumentsContainer	   = std::unordered_map<std::string, std::string>;
 using PositionalArgumentsContainer = std::vector<std::string>;
 
@@ -18,6 +20,10 @@ public:
 
 	const std::string& GetProgramName() const;
 
+	bool								HasPositionalArgument(const std::string& arg) const;
+	CommandLineArgumentError			GetPositionalArgument(size_t index, std::string& outValue) const;
+	const PositionalArgumentsContainer& GetPositionalArguments() const;
+
 	bool			   HasArgument(const std::string& arg) const;
 	const std::string& GetArgument(const std::string& arg) const;
 
@@ -30,9 +36,13 @@ public:
 	template <typename T>
 	CommandLineArgumentError GetArgumentVectorAs(const std::string& arg, std::vector<T>& outValues) const;
 
-	bool								HasPositionalArgument(const std::string& arg) const;
-	CommandLineArgumentError			GetPositionalArgument(size_t index, std::string& outValue) const;
-	const PositionalArgumentsContainer& GetPositionalArguments() const;
+	// Allowed names omit the leading "--"
+	void EnableArgumentValidation(bool enabled);
+	void AddAllowedArgument(const std::string& arg);
+	void RemoveAllowedArgument(const std::string& arg);
+	void ClearAllowedArguments();
+
+	CommandLineArgumentError ValidateNamedArguments(NonAllowedArgumentsContainer& outUnexpectedArguments) const;
 
 private:
 	void ParseArguments();
@@ -52,8 +62,10 @@ private:
 	char** m_ArgV;
 
 	const std::string			 m_ProgramName;
-	ParsedArgumentsContainer	 m_ParsedArgs;
 	PositionalArgumentsContainer m_PositionalArgs;
+	ParsedArgumentsContainer	 m_ParsedArgs;
+	AllowedArgumentsContainer	 m_AllowedArgs;
+	bool						 m_IsArgumentValidationEnabled = false;
 };
 
 template <typename T>

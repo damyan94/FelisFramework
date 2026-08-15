@@ -2,30 +2,6 @@
 
 #include "ExampleApplication.h"
 
-#include "Felis/Time/Timer.h"
-#include "Felis/Time/TimerManager.h"
-
-#include "Felis/Error/Error.h"
-#include "Felis/Error/FelisError.h"
-
-enum class MyErrorEnum
-{
-	a,
-	b,
-	c,
-	Count
-};
-
-template <>
-const char* Error<MyErrorEnum>::s_Type = "My error type";
-
-template <>
-const ErrorRegistry<MyErrorEnum> Error<MyErrorEnum>::s_Registry({
-	ErrorData{"a"},
-	ErrorData{"b"},
-	//ErrorData{"c"},
-});
-
 ExampleApplication::ExampleApplication(int argC, char** argV)
 	: Application(argC, argV)
 {
@@ -33,84 +9,182 @@ ExampleApplication::ExampleApplication(int argC, char** argV)
 
 ApplicationError ExampleApplication::OnInit()
 {
-	const auto& args = GetCommandLineArguments();
+	auto& args = GetCommandLineArguments();
 
-	LogDebug(">>> Running ", args.GetProgramName(), "; ", args.GetArgC());
-	LogDebug(">>> OnInit called");
+	Logger::GetGlobalLogger().SetLogPrefix("FelisExample");
 
-	Error e(EFelisErrorCode::Unknown);
-	LogError(e.GetErrorData().Text, "; ", TimeFormat::ToString(e.GetTimestamp()));
+	args.EnableArgumentValidation(true);
+	args.AddAllowedArgument("help");
+	args.AddAllowedArgument("mode");
+	args.AddAllowedArgument("verbose");
 
-	LogDebug(TimeFormat::ToString(DateTime::Now(), ETimeStringFormat::Timepoint));
+	m_ShowHelp = args.HasArgument("help");
+	ReturnIf(m_ShowHelp, EApplicationErrorCode::Success);
 
-	LogDebug(e);
+	NonAllowedArgumentsContainer unexpectedArguments;
+	const auto					 validationError = args.ValidateNamedArguments(unexpectedArguments);
+	if (validationError)
+	{
+		for (const auto& argument : unexpectedArguments)
+		{
+			LogError("Unexpected argument: --", argument);
+		}
 
-	e = Error(EFelisErrorCode::Success);
-	LogDebug(e);
+		PrintUsage();
+		return EApplicationErrorCode::InvalidCommandLineArguments;
+	}
 
-	Error err(MyErrorEnum::c);
-	LogDebug(err);
+	if (args.GetPositionalArguments().size() != 1)
+	{
+		LogError("Expected exactly one input file. Use --help for usage.");
+		return EApplicationErrorCode::InvalidCommandLineArguments;
+	}
+
+	m_InputPath = args.GetPositionalArguments().front();
+
+	std::string mode;
+	auto		error = args.GetOrDefault("mode", mode, std::string("lines"));
+	if (error)
+	{
+		LogError(error);
+		return EApplicationErrorCode::InvalidCommandLineArguments;
+	}
+
+	if (mode == "lines")
+	{
+		m_CountMode = ECountMode::Lines;
+	}
+	else if (mode == "words")
+	{
+		m_CountMode = ECountMode::Words;
+	}
+	else if (mode == "bytes")
+	{
+		m_CountMode = ECountMode::Bytes;
+	}
+	else
+	{
+		LogError("Invalid mode '", mode, "'. Expected lines, words or bytes.");
+		return EApplicationErrorCode::InvalidCommandLineArguments;
+	}
+
+	error = args.GetOrDefault("verbose", m_Verbose, false);
+	if (error)
+	{
+		LogError(error);
+		return EApplicationErrorCode::InvalidCommandLineArguments;
+	}
+
+	if (m_Verbose)
+	{
+		Logger::GetGlobalLogger().SetLogLevel(ELogLevel::Info);
+	}
+	else
+	{
+		Logger::GetGlobalLogger().SetLogLevel(ELogLevel::Error);
+	}
 
 	return EApplicationErrorCode::Success;
 }
 
 ApplicationError ExampleApplication::OnRun()
 {
-	LogDebug(">>> OnRun called");
-
-	auto& tm = TimerManager::Instance();
-
-	Timer t1, t2;
-	int	  ticks = 0;
-
-	LogInfo("t1 started pulse with interval of 1s");
-	t1.Start(ETimerType::Pulse,
-			 Duration::Seconds(1),
-			 [&ticks, &t1, &t2]
-			 {
-				 LogDebug("t1 tick ", ticks);
-				 ticks++;
-
-				 if (ticks == 3)
-				 {
-					 LogInfo("t1 stopped");
-					 t1.Stop();
-					 LogInfo("t2 started oneshot with interval of 3s");
-					 t2.Start(ETimerType::Oneshot, Duration::Seconds(3), [] { LogDebug("t2 tick"); });
-				 }
-				 else if (ticks == 4)
-				 {
-					 t2.Pause();
-				 }
-			 });
-
-	bool started = false;
-	while (ticks <= 5)
+	if (m_ShowHelp)
 	{
-		if (ticks == 3 && !started)
+		PrintUsage();
+		return EApplicationErrorCode::Success;
+	}
+
+	std::ifstream input(m_InputPath, std::ios::binary);
+	if (!input.is_open())
+	{
+		LogError("Failed to open input file: ", m_InputPath);
+		return EApplicationErrorCode::RuntimeFailed;
+	}
+
+	uint64_t lineCount			= 0;
+	uint64_t wordCount			= 0;
+	uint64_t byteCount			= 0;
+	bool	 previousWhitespace = true;
+	bool	 endsWithNewline	= false;
+	char	 character			= '\0';
+
+	while (input.get(character))
+	{
+		++byteCount;
+
+		endsWithNewline = character == '\n';
+		if (endsWithNewline)
 		{
-			started = true;
-			LogInfo("t1 started with interval of 5s");
-			t1.Start(ETimerType::Pulse,
-					 Duration::Seconds(5),
-					 [&ticks]
-					 {
-						 LogDebug("t1 tick ", ticks);
-						 ticks++;
-					 });
+			++lineCount;
 		}
 
-		tm.Update();
+		const bool whitespace = std::isspace(static_cast<unsigned char>(character)) != 0;
+		if (!whitespace && previousWhitespace)
+		{
+			++wordCount;
+		}
 
-		std::this_thread::sleep_for(Duration::Milliseconds(16));
+		previousWhitespace = whitespace;
 	}
+
+	if (input.bad())
+	{
+		LogError("Failed while reading input file: ", m_InputPath);
+		return EApplicationErrorCode::RuntimeFailed;
+	}
+
+	if (byteCount > 0 && !endsWithNewline)
+	{
+		++lineCount;
+	}
+
+	uint64_t	result = lineCount;
+	const char* label  = "lines";
+
+	switch (m_CountMode)
+	{
+	case ECountMode::Lines:
+		result = lineCount;
+		label  = "lines";
+		break;
+
+	case ECountMode::Words:
+		result = wordCount;
+		label  = "words";
+		break;
+
+	case ECountMode::Bytes:
+		result = byteCount;
+		label  = "bytes";
+		break;
+	}
+
+	LogInfo("Processed ", byteCount, " bytes from ", m_InputPath);
+	std::cout << result << ' ' << label << ": " << m_InputPath << '\n';
 
 	return EApplicationErrorCode::Success;
 }
 
+void ExampleApplication::PrintUsage() const
+{
+	const auto& programName = GetCommandLineArguments().GetProgramName();
+
+	std::cout << "Usage: " << (programName.empty() ? "FelisExample" : programName)
+			  << " [--mode=lines|words|bytes] [--verbose] <file>\n"
+			  << "\n"
+			  << "Count lines, words or bytes in a text file.\n"
+			  << "\n"
+			  << "Options:\n"
+			  << "  --mode=MODE  Select lines, words or bytes. Default: lines.\n"
+			  << "  --verbose    Enable informational logging.\n"
+			  << "  --help       Show this help text.\n"
+			  << "  --           Stop parsing named arguments.\n";
+}
+
 ApplicationError ExampleApplication::OnDeinit()
 {
-	LogDebug(">>> OnDeinit called");
+	Logger::GetGlobalLogger().Flush();
 
 	return EApplicationErrorCode::Success;
 }

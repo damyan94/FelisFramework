@@ -238,6 +238,60 @@ void TestArgumentVectors(TestReporter& r)
 	TEST_CHECK(r, unchangedValues.size() == 1 && unchangedValues[0] == 7);
 }
 
+void TestNamedArgumentValidation(TestReporter& r)
+{
+	char  program[]	   = "felis-app";
+	char  mode[]	   = "--mode=lines";
+	char  zeta[]	   = "--zeta";
+	char  alpha[]	   = "--alpha=value";
+	char  separator[]  = "--";
+	char  positional[] = "--not-an-option";
+	char* argV[]	   = {program, mode, zeta, alpha, separator, positional};
+	int	  argC		   = static_cast<int>(sizeof(argV) / sizeof(argV[0]));
+
+	CommandLineArguments args(argC, argV);
+
+	NonAllowedArgumentsContainer unexpectedArguments{"stale"};
+	const auto					 disabledError = args.ValidateNamedArguments(unexpectedArguments);
+	TEST_CHECK(r, !disabledError);
+	TEST_CHECK(r, unexpectedArguments.empty());
+
+	args.EnableArgumentValidation(true);
+	args.AddAllowedArgument("mode");
+	args.AddAllowedArgument("help");
+
+	const auto validationError = args.ValidateNamedArguments(unexpectedArguments);
+	TEST_CHECK(r, validationError.GetErrorCode() == ECommandLineArgumentErrorCode::UnexpectedArgument);
+	TEST_CHECK(r, std::string(validationError.GetErrorData().Text) == "Unexpected command-line argument");
+	TEST_CHECK(r, unexpectedArguments.size() == 2);
+	TEST_CHECK(r, unexpectedArguments.contains("alpha"));
+	TEST_CHECK(r, unexpectedArguments.contains("zeta"));
+	TEST_CHECK(r, args.HasPositionalArgument("--not-an-option"));
+
+	args.AddAllowedArgument("mode");
+	args.AddAllowedArgument("alpha");
+	args.AddAllowedArgument("zeta");
+
+	const auto allowedError = args.ValidateNamedArguments(unexpectedArguments);
+	TEST_CHECK(r, !allowedError);
+	TEST_CHECK(r, unexpectedArguments.empty());
+
+	args.ClearAllowedArguments();
+
+	const auto emptyAllowedError = args.ValidateNamedArguments(unexpectedArguments);
+	TEST_CHECK(r, emptyAllowedError.GetErrorCode() == ECommandLineArgumentErrorCode::UnexpectedArgument);
+	TEST_CHECK(r, unexpectedArguments.size() == 3);
+	TEST_CHECK(r, unexpectedArguments.contains("alpha"));
+	TEST_CHECK(r, unexpectedArguments.contains("zeta"));
+	TEST_CHECK(r, unexpectedArguments.contains("mode"));
+
+	args.EnableArgumentValidation(false);
+
+	const auto reDisabledError = args.ValidateNamedArguments(unexpectedArguments);
+	TEST_CHECK(r, !reDisabledError);
+	TEST_CHECK(r, unexpectedArguments.empty());
+}
+
 void TestEmptyArgumentVector(TestReporter& r)
 {
 	CommandLineArguments args(0, nullptr);
@@ -261,6 +315,7 @@ void TestCommandLineArguments()
 	TestTypedArgumentsAndDefaults(r);
 	TestTypedArgumentErrors(r);
 	TestArgumentVectors(r);
+	TestNamedArgumentValidation(r);
 	TestEmptyArgumentVector(r);
 
 	r.PrintSummary();

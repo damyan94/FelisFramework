@@ -16,7 +16,7 @@ option(FELIS_BUILD_TEST "Build Felis test" OFF)
 
 # Felis library
 set(FELIS_TARGET FelisFramework)
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
+set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Source)
 
 file(GLOB_RECURSE FELIS_SOURCES CONFIGURE_DEPENDS
     ${SOURCE_DIR}/*.h
@@ -25,14 +25,15 @@ file(GLOB_RECURSE FELIS_SOURCES CONFIGURE_DEPENDS
 
 add_library(${FELIS_TARGET} STATIC ${FELIS_SOURCES})
 
-target_include_directories(${FELIS_TARGET} PRIVATE ${SOURCE_DIR})
+target_include_directories(${FELIS_TARGET} PUBLIC ${SOURCE_DIR})
+target_compile_features(${FELIS_TARGET} PUBLIC cxx_std_23)
 target_compile_options(${FELIS_TARGET} PRIVATE -Wall -Wextra -Wpedantic)
 target_precompile_headers(${FELIS_TARGET} PRIVATE ${SOURCE_DIR}/Felis/stdafx.h)
 
 # Example
 if(FELIS_BUILD_EXAMPLE)
     set(EXAMPLE_TARGET FelisExample)
-    set(EXAMPLE_DIR ${CMAKE_SOURCE_DIR}/Example)
+    set(EXAMPLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Example)
 
     file(GLOB_RECURSE EXAMPLE_SOURCES CONFIGURE_DEPENDS
         ${EXAMPLE_DIR}/*.cpp
@@ -46,13 +47,12 @@ if(FELIS_BUILD_EXAMPLE)
     target_precompile_headers(${EXAMPLE_TARGET} PRIVATE ${EXAMPLE_DIR}/stdafx.h)
 
     target_link_libraries(${EXAMPLE_TARGET} PRIVATE ${FELIS_TARGET})
-    target_include_directories(${EXAMPLE_TARGET} PRIVATE ${SOURCE_DIR})
 endif()
 
 # Test
 if(FELIS_BUILD_TEST)
     set(TEST_TARGET FelisTest)
-    set(TEST_DIR ${CMAKE_SOURCE_DIR}/Test)
+    set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Test)
 
     file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
         ${TEST_DIR}/*.cpp
@@ -66,5 +66,4 @@ if(FELIS_BUILD_TEST)
     target_precompile_headers(${TEST_TARGET} PRIVATE ${TEST_DIR}/stdafx.h)
 
     target_link_libraries(${TEST_TARGET} PRIVATE ${FELIS_TARGET})
-    target_include_directories(${TEST_TARGET} PRIVATE ${SOURCE_DIR})
 endif()

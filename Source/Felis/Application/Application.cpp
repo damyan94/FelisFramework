@@ -20,6 +20,11 @@ ApplicationError Application::RunApplication()
 	return deinitError;
 }
 
+CommandLineArguments& Application::GetCommandLineArguments()
+{
+	return m_Args;
+}
+
 const CommandLineArguments& Application::GetCommandLineArguments() const
 {
 	return m_Args;

@@ -27,18 +27,6 @@ const std::string& CommandLineArguments::GetProgramName() const
 	return m_ProgramName;
 }
 
-bool CommandLineArguments::HasArgument(const std::string& arg) const
-{
-	return m_ParsedArgs.contains(arg);
-}
-
-const std::string& CommandLineArguments::GetArgument(const std::string& arg) const
-{
-	AssertReturnIf(!HasArgument(arg), s_ErrorString);
-
-	return m_ParsedArgs.at(arg);
-}
-
 bool CommandLineArguments::HasPositionalArgument(const std::string& arg) const
 {
 	return std::find(m_PositionalArgs.begin(), m_PositionalArgs.end(), arg) != m_PositionalArgs.end();
@@ -55,6 +43,18 @@ CommandLineArgumentError CommandLineArguments::GetPositionalArgument(size_t inde
 const PositionalArgumentsContainer& CommandLineArguments::GetPositionalArguments() const
 {
 	return m_PositionalArgs;
+}
+
+bool CommandLineArguments::HasArgument(const std::string& arg) const
+{
+	return m_ParsedArgs.contains(arg);
+}
+
+const std::string& CommandLineArguments::GetArgument(const std::string& arg) const
+{
+	AssertReturnIf(!HasArgument(arg), s_ErrorString);
+
+	return m_ParsedArgs.at(arg);
 }
 
 bool CommandLineArguments::ParseArgumentVector(const std::string& value, std::vector<std::string>& outValues) const
@@ -131,4 +131,46 @@ void CommandLineArguments::ParseArguments()
 
 		m_ParsedArgs.insert_or_assign(std::string(key), std::string(value));
 	}
+}
+
+void CommandLineArguments::EnableArgumentValidation(bool enabled)
+{
+	m_IsArgumentValidationEnabled = enabled;
+}
+
+void CommandLineArguments::AddAllowedArgument(const std::string& arg)
+{
+	m_AllowedArgs.insert(arg);
+}
+
+void CommandLineArguments::RemoveAllowedArgument(const std::string& arg)
+{
+	ReturnIf(!m_AllowedArgs.contains(arg));
+
+	m_AllowedArgs.erase(arg);
+}
+
+void CommandLineArguments::ClearAllowedArguments()
+{
+	m_AllowedArgs.clear();
+}
+
+CommandLineArgumentError CommandLineArguments::ValidateNamedArguments(
+	NonAllowedArgumentsContainer& outUnexpectedArguments) const
+{
+	outUnexpectedArguments.clear();
+
+	ReturnIf(!m_IsArgumentValidationEnabled, ECommandLineArgumentErrorCode::Success);
+
+	for (const auto& [arg, _] : m_ParsedArgs)
+	{
+		if (!m_AllowedArgs.contains(arg))
+		{
+			outUnexpectedArguments.insert(arg);
+		}
+	}
+
+	ReturnIf(!outUnexpectedArguments.empty(), ECommandLineArgumentErrorCode::UnexpectedArgument);
+
+	return ECommandLineArgumentErrorCode::Success;
 }
