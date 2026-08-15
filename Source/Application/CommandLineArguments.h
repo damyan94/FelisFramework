@@ -1,8 +1,12 @@
 #pragma once
 
-using ParsedArgumentsContainer = std::unordered_map<std::string, std::string>;
+#include "Application/CommandLineArgumentsError.h"
+
+using ParsedArgumentsContainer	   = std::unordered_map<std::string, std::string>;
+using PositionalArgumentsContainer = std::vector<std::string>;
 
 // Command line arguments utility
+// Supports --flag, --key=value, positional arguments and --
 class CommandLineArguments
 {
 public:
@@ -18,58 +22,151 @@ public:
 	const std::string& GetArgument(const std::string& arg) const;
 
 	template <typename T>
-	T GetOrDefault(const std::string& arg, T def) const;
+	CommandLineArgumentError GetOrDefault(const std::string& arg, T& outValue, const T& def) const;
 
 	template <typename T>
-	T GetArgumentAs(const std::string& arg) const;
+	CommandLineArgumentError GetArgumentAs(const std::string& arg, T& outValue) const;
+
+	template <typename T>
+	CommandLineArgumentError GetArgumentVectorAs(const std::string& arg, std::vector<T>& outValues) const;
+
+	bool								HasPositionalArgument(const std::string& arg) const;
+	CommandLineArgumentError			GetPositionalArgument(size_t index, std::string& outValue) const;
+	const PositionalArgumentsContainer& GetPositionalArguments() const;
 
 private:
-	int ParseArguments();
+	void ParseArguments();
+	bool ParseArgumentVector(const std::string& value, std::vector<std::string>& outValues) const;
+
+	template <typename T>
+	CommandLineArgumentError ParseValueAs(const std::string& value, T& outValue) const;
+
+	template <typename T>
+	CommandLineArgumentError ParseNumber(const std::string& value, T& outValue) const;
+
+	template <typename>
+	static constexpr bool s_IsSupportedArgumentType = false;
 
 private:
 	int	   m_ArgC;
 	char** m_ArgV;
 
-	const std::string		 m_ProgramName;
-	ParsedArgumentsContainer m_ParsedArgs;
+	const std::string			 m_ProgramName;
+	ParsedArgumentsContainer	 m_ParsedArgs;
+	PositionalArgumentsContainer m_PositionalArgs;
 };
 
 template <typename T>
-inline T CommandLineArguments::GetOrDefault(const std::string& arg, T def) const
+inline CommandLineArgumentError CommandLineArguments::GetOrDefault(const std::string& arg,
+																   T&				  outValue,
+																   const T&			  def) const
 {
-	ReturnIf(!HasArgument(arg), def);
+	if (!HasArgument(arg))
+	{
+		outValue = def;
+		return ECommandLineArgumentErrorCode::Success;
+	}
 
-	return GetArgumentAs<T>(arg);
+	return GetArgumentAs<T>(arg, outValue);
+}
+
+template <typename T>
+inline CommandLineArgumentError CommandLineArguments::GetArgumentAs(const std::string& arg, T& outValue) const
+{
+	ReturnIf(!HasArgument(arg), ECommandLineArgumentErrorCode::ArgumentNotFound);
+
+	return ParseValueAs<T>(GetArgument(arg), outValue);
+}
+
+template <typename T>
+inline CommandLineArgumentError CommandLineArguments::GetArgumentVectorAs(const std::string& arg,
+																		  std::vector<T>&	 outValues) const
+{
+	ReturnIf(!HasArgument(arg), ECommandLineArgumentErrorCode::ArgumentNotFound);
+
+	std::vector<std::string> values;
+	ReturnIf(!ParseArgumentVector(GetArgument(arg), values), ECommandLineArgumentErrorCode::InvalidValue);
+
+	std::vector<T> parsedValues;
+	parsedValues.reserve(values.size());
+
+	for (const auto& value : values)
+	{
+		T parsedValue{};
+
+		const auto error = ParseValueAs<T>(value, parsedValue);
+		ReturnIf(error, error);
+
+		parsedValues.emplace_back(std::move(parsedValue));
+	}
+
+	outValues = std::move(parsedValues);
+	return ECommandLineArgumentErrorCode::Success;
+}
+
+template <typename T>
+inline CommandLineArgumentError CommandLineArguments::ParseValueAs(const std::string&, T&) const
+{
+	static_assert(s_IsSupportedArgumentType<T>, "Unsupported command-line argument type");
+	return ECommandLineArgumentErrorCode::InvalidValue;
 }
 
 template <>
-inline bool CommandLineArguments::GetArgumentAs(const std::string& arg) const
+inline CommandLineArgumentError CommandLineArguments::ParseValueAs(const std::string& value, bool& outValue) const
 {
-	ReturnIf(!HasArgument(arg), bool());
+	if (value == "1" || value == "true")
+	{
+		outValue = true;
+		return ECommandLineArgumentErrorCode::Success;
+	}
 
-	return bool(std::stoi(GetArgument(arg)));
+	if (value == "0" || value == "false")
+	{
+		outValue = false;
+		return ECommandLineArgumentErrorCode::Success;
+	}
+
+	return ECommandLineArgumentErrorCode::InvalidValue;
 }
 
 template <>
-inline int CommandLineArguments::GetArgumentAs(const std::string& arg) const
+inline CommandLineArgumentError CommandLineArguments::ParseValueAs(const std::string& value, int& outValue) const
 {
-	ReturnIf(!HasArgument(arg), int());
-
-	return std::stoi(GetArgument(arg));
+	return ParseNumber(value, outValue);
 }
 
 template <>
-inline float CommandLineArguments::GetArgumentAs(const std::string& arg) const
+inline CommandLineArgumentError CommandLineArguments::ParseValueAs(const std::string& value, float& outValue) const
 {
-	ReturnIf(!HasArgument(arg), float());
-
-	return std::stof(GetArgument(arg));
+	return ParseNumber(value, outValue);
 }
 
 template <>
-inline double CommandLineArguments::GetArgumentAs(const std::string& arg) const
+inline CommandLineArgumentError CommandLineArguments::ParseValueAs(const std::string& value, double& outValue) const
 {
-	ReturnIf(!HasArgument(arg), double());
+	return ParseNumber(value, outValue);
+}
 
-	return std::stof(GetArgument(arg));
+template <>
+inline CommandLineArgumentError CommandLineArguments::ParseValueAs(const std::string& value,
+																   std::string&		  outValue) const
+{
+	outValue = value;
+	return ECommandLineArgumentErrorCode::Success;
+}
+
+template <typename T>
+inline CommandLineArgumentError CommandLineArguments::ParseNumber(const std::string& value, T& outValue) const
+{
+	T parsedValue{};
+
+	const auto* begin  = value.data();
+	const auto* end	   = begin + value.size();
+	const auto	result = std::from_chars(begin, end, parsedValue);
+
+	ReturnIf(result.ec == std::errc::result_out_of_range, ECommandLineArgumentErrorCode::ValueOutOfRange);
+	ReturnIf(result.ec != std::errc() || result.ptr != end, ECommandLineArgumentErrorCode::InvalidValue);
+
+	outValue = parsedValue;
+	return ECommandLineArgumentErrorCode::Success;
 }

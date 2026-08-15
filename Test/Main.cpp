@@ -1,19 +1,16 @@
 #include "stdafx.h"
 
-#include "Error/ErrorTest.h"
-#include "Logger/LoggerTest.h"
-#include "Time/DurationTest.h"
-#include "Time/TimeTest.h"
-#include "Time/TimerTest.h"
+#include "TestApplication.h"
 
 int main(int argC, char** argV)
 {
-	Test::TestError();
-	Test::TestLogger();
+	TestApplication app(argC, argV);
 
-	Test::TestDuration();
-	Test::TestTime();
-	Test::TestTimers();
+	const auto ec = app.RunApplication();
+	if (ec)
+	{
+		LogError(ec);
+	}
 
-	return 0;
+	return ec.GetErrorCodeInt();
 }

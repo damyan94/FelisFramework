@@ -2,12 +2,10 @@
 
 #include "Application/Application.h"
 
-// An example application
-class ExampleApplication final : public Application
+class TestApplication final : public Application
 {
 public:
-	ExampleApplication(int argC, char** argV);
-	~ExampleApplication() = default;
+	TestApplication(int argC, char** argV);
 
 private:
 	ApplicationError OnInit() override;

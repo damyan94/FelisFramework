@@ -27,13 +27,15 @@ const ErrorRegistry<MyErrorEnum> Error<MyErrorEnum>::s_Registry({
 });
 
 ExampleApplication::ExampleApplication(int argC, char** argV)
-	: IApplication(argC, argV)
+	: Application(argC, argV)
 {
 }
 
-bool ExampleApplication::OnInit()
+ApplicationError ExampleApplication::OnInit()
 {
-	LogDebug(">>> Running ", m_Args.GetProgramName(), "; ", m_Args.GetArgC());
+	const auto& args = GetCommandLineArguments();
+
+	LogDebug(">>> Running ", args.GetProgramName(), "; ", args.GetArgC());
 	LogDebug(">>> OnInit called");
 
 	Error e(EFelisErrorCode::Unknown);
@@ -49,10 +51,10 @@ bool ExampleApplication::OnInit()
 	Error err(MyErrorEnum::c);
 	LogDebug(err);
 
-	return true;
+	return EApplicationErrorCode::Success;
 }
 
-void ExampleApplication::OnRun()
+ApplicationError ExampleApplication::OnRun()
 {
 	LogDebug(">>> OnRun called");
 
@@ -102,9 +104,13 @@ void ExampleApplication::OnRun()
 
 		std::this_thread::sleep_for(Duration::Milliseconds(16));
 	}
+
+	return EApplicationErrorCode::Success;
 }
 
-void ExampleApplication::OnDeinit()
+ApplicationError ExampleApplication::OnDeinit()
 {
 	LogDebug(">>> OnDeinit called");
+
+	return EApplicationErrorCode::Success;
 }

@@ -6,5 +6,11 @@ int main(int argC, char** argV)
 {
 	ExampleApplication app(argC, argV);
 
-	return app.RunApplication();
+	const auto ec = app.RunApplication();
+	if (ec)
+	{
+		LogError(ec);
+	}
+
+	return ec.GetErrorCodeInt();
 }

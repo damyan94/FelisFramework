@@ -17,6 +17,7 @@
 #include <vector>
 
 #include <algorithm>
+#include <charconv>
 #include <chrono>
 #include <filesystem>
 #include <format>
@@ -29,6 +30,7 @@
 #include <optional>
 #include <shared_mutex>
 #include <source_location>
+#include <system_error>
 #include <thread>
 #include <typeindex>
 #include <utility>
