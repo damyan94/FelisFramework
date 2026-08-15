@@ -66,6 +66,8 @@ LogFlags Logger::GetLogFlags() const
 
 void Logger::AddLogDestination(LogDestination&& destination)
 {
+	ReturnIf(!destination.Formatter || !destination.Writer);
+
 	RemoveLogDestination(destination.Type);
 	m_Destinations.emplace_back(std::move(destination));
 }

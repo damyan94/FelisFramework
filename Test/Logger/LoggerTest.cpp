@@ -636,6 +636,7 @@ void TestGlobalLoggerMacros(TestReporter& r)
 // exactly by TestFormatter_ExactColorCodePerLevel above.
 void PrintVisualSample()
 {
+#ifdef LOGGER_TEST_PRINT_VISUAL_SAMPLE
 	Logger logger;
 	logger.SetLogPrefix("VisualSample");
 	logger.SetLogLevel(ELogLevel::Debug);
@@ -645,6 +646,7 @@ void PrintVisualSample()
 
 	logger.Log(ELogLevel::Debug, "");
 	LogAllLevels(logger);
+#endif
 }
 
 } // namespace
@@ -676,7 +678,7 @@ void TestLogger()
 
 	r.PrintSummary();
 
-	//PrintVisualSample();
+	PrintVisualSample();
 }
 
 } // namespace Test

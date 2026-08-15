@@ -243,8 +243,5 @@ void TimerManager::OnTimerTick(TimerData& timerData)
 		return;
 	}
 
-	while (timerData.Elapsed > timerData.Interval)
-	{
-		timerData.Elapsed -= timerData.Interval;
-	}
+	timerData.Elapsed = timerData.Elapsed.As<Duration::Nanoseconds>() % timerData.Interval.As<Duration::Nanoseconds>();
 }

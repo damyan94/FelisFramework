@@ -99,7 +99,7 @@ void TestPulseCatchesUpAfterLongUpdate(TestReporter& r)
 
 	tm.Update(Duration::Milliseconds(5));
 
-	TEST_CHECK(r, t.GetElapsed() == Duration::Milliseconds(5) == 0);
+	TEST_CHECK(r, (t.GetElapsed() == Duration::Milliseconds(5)) == 0);
 
 	t.Stop();
 }

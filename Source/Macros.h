@@ -135,11 +135,10 @@
 			return value != _Name::Invalid;                                                                            \
 		}                                                                                                              \
                                                                                                                        \
-		static _Type Default;                                                                                          \
-		static _Type Invalid;                                                                                          \
+		inline static _Type Default = _DefaultValue;                                                                   \
+		inline static _Type Invalid = _InvalidValue;                                                                   \
                                                                                                                        \
 	public:                                                                                                            \
 		_Type value = _DefaultValue;                                                                                   \
-	};                                                                                                                 \
-	_Type _Name::Default = _DefaultValue;                                                                              \
-	_Type _Name::Invalid = _InvalidValue;
+	};
+

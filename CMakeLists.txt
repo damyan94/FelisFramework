@@ -29,7 +29,6 @@ target_include_directories(${FELIS_TARGET} PUBLIC ${SOURCE_DIR})
 target_compile_options(${FELIS_TARGET} PRIVATE -Wall -Wextra -Wpedantic)
 target_precompile_headers(${FELIS_TARGET} PRIVATE ${SOURCE_DIR}/stdafx.h)
 
-
 # Example
 if(FELIS_BUILD_EXAMPLE)
     set(EXAMPLE_TARGET FelisExample)
@@ -42,7 +41,9 @@ if(FELIS_BUILD_EXAMPLE)
 
     add_executable(${EXAMPLE_TARGET} ${EXAMPLE_SOURCES})
 
-    target_include_directories(${EXAMPLE_TARGET} PUBLIC ${EXAMPLE_DIR})
+    target_include_directories(${EXAMPLE_TARGET} PRIVATE ${EXAMPLE_DIR})
+    target_compile_options(${EXAMPLE_TARGET} PRIVATE -Wall -Wextra -Wpedantic)
+    target_precompile_headers(${EXAMPLE_TARGET} PRIVATE ${SOURCE_DIR}/stdafx.h)
 
     target_link_libraries(${EXAMPLE_TARGET} PRIVATE ${FELIS_TARGET})
 endif()
@@ -59,7 +60,9 @@ if(FELIS_BUILD_TEST)
 
     add_executable(${TEST_TARGET} ${TEST_SOURCES})
 
-    target_include_directories(${TEST_TARGET} PUBLIC ${TEST_DIR})
+    target_include_directories(${TEST_TARGET} PRIVATE ${TEST_DIR})
+    target_compile_options(${TEST_TARGET} PRIVATE -Wall -Wextra -Wpedantic)
+    target_precompile_headers(${TEST_TARGET} PRIVATE ${SOURCE_DIR}/stdafx.h)
 
     target_link_libraries(${TEST_TARGET} PRIVATE ${FELIS_TARGET})
 endif()
