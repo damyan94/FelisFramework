@@ -2,9 +2,7 @@
 
 #include "Time/TimeTest.h"
 
-#include "TestReporter.h"
-
-#include "Time/Time.h"
+#include "Felis/Time/Time.h"
 
 #include <regex>
 

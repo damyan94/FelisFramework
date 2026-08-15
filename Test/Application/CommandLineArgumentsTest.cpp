@@ -2,9 +2,7 @@
 
 #include "Application/CommandLineArgumentsTest.h"
 
-#include "TestReporter.h"
-
-#include "Application/CommandLineArguments.h"
+#include "Felis/Application/CommandLineArguments.h"
 
 namespace Test
 {

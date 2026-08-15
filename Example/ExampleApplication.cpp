@@ -2,11 +2,11 @@
 
 #include "ExampleApplication.h"
 
-#include "Time/Timer.h"
-#include "Time/TimerManager.h"
+#include "Felis/Time/Timer.h"
+#include "Felis/Time/TimerManager.h"
 
-#include "Error/Error.h"
-#include "Error/FelisError.h"
+#include "Felis/Error/Error.h"
+#include "Felis/Error/FelisError.h"
 
 enum class MyErrorEnum
 {

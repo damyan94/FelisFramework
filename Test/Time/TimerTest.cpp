@@ -2,10 +2,8 @@
 
 #include "Time/TimerTest.h"
 
-#include "TestReporter.h"
-
-#include "Time/Timer.h"
-#include "Time/TimerManager.h"
+#include "Felis/Time/Timer.h"
+#include "Felis/Time/TimerManager.h"
 
 namespace Test
 {

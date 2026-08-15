@@ -2,12 +2,9 @@
 
 #include "Logger/LoggerTest.h"
 
-#include "TestReporter.h"
-
-#include "Logger/Logger.h"
-
-#include "Logger/Formatters/LogFormatterConsole.h"
-#include "Logger/Writers/LogWriterConsole.h"
+#include "Felis/Logger/Formatters/LogFormatterConsole.h"
+#include "Felis/Logger/Logger.h"
+#include "Felis/Logger/Writers/LogWriterConsole.h"
 
 #include <regex>
 

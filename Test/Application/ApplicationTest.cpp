@@ -2,9 +2,7 @@
 
 #include "Application/ApplicationTest.h"
 
-#include "TestReporter.h"
-
-#include "Application/Application.h"
+#include "Felis/Application/Application.h"
 
 namespace Test
 {

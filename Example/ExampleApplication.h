@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Application/Application.h"
+#include "Felis/Application/Application.h"
 
 // An example application
 class ExampleApplication final : public Application

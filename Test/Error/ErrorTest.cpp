@@ -2,10 +2,8 @@
 
 #include "Error/ErrorTest.h"
 
-#include "TestReporter.h"
-
-#include "Error/Error.h"
-#include "Error/ErrorRegistry.h"
+#include "Felis/Error/Error.h"
+#include "Felis/Error/ErrorRegistry.h"
 
 // Test-only error enum + registry specialization, isolated from EFelisErrorCode/FelisError.cpp
 // so these tests don't depend on (or break alongside) the production error set.
