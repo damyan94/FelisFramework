@@ -40,7 +40,7 @@ public:
 	Timer(Timer&& other);
 	Timer& operator=(Timer&& other);
 
-	void Start(ETimerType timerType, Duration interval, TimerCallback callback);
+	void Start(ETimerType timerType, Duration interval, TimerCallback callback = [] {});
 	void Stop();
 	void Pause();
 	void Resume();

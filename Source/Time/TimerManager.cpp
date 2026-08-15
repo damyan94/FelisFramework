@@ -167,8 +167,10 @@ float TimerManager::GetProgress(TimerId id) const
 	const TimerData* timerData = GetTimerData(id);
 	ReturnIf(!timerData, 0.0f);
 
-	return (float)timerData->Elapsed.As(EUnitOfTime::Nanosecond) /
-		   (float)timerData->Interval.As(EUnitOfTime::Nanosecond);
+	const float progress =
+		(float)timerData->Elapsed.As(EUnitOfTime::Nanosecond) / (float)timerData->Interval.As(EUnitOfTime::Nanosecond);
+
+	return std::clamp(progress, 0.0f, 1.0f);
 }
 
 void TimerManager::Update()
@@ -189,15 +191,6 @@ void TimerManager::Update(Duration dt)
 		ContinueIf(timerData.Elapsed < timerData.Interval);
 
 		OnTimerTick(timerData);
-
-		// TODO Think about implementing a catch-up mechanism
-		/*static constexpr int maxCallbacksToExecute = 10;
-		int callbacksExecuted	   = 0;
-
-		while (timerData.TimerState == ETimerState::Running && timerData.Elapsed >= timerData.Interval)
-		{
-			OnTimerTick(timerData);
-		}*/
 	}
 
 	ExecuteCallbacks();
@@ -244,12 +237,14 @@ void TimerManager::OnTimerTick(TimerData& timerData)
 		m_CallbacksToExecute.emplace_back(timerData.Callback);
 	}
 
-	if (timerData.TimerType == ETimerType::Pulse)
-	{
-		timerData.Elapsed -= timerData.Interval;
-	}
-	else
+	if (timerData.TimerType == ETimerType::Oneshot)
 	{
 		Stop(timerData.Id);
+		return;
+	}
+
+	while (timerData.Elapsed > timerData.Interval)
+	{
+		timerData.Elapsed -= timerData.Interval;
 	}
 }
