@@ -2,5 +2,5 @@
 
 namespace Test
 {
-extern void TestApplicationLifecycle();
+extern int TestApplicationLifecycle();
 }

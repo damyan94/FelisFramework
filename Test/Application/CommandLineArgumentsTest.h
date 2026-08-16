@@ -2,5 +2,5 @@
 
 namespace Test
 {
-extern void TestCommandLineArguments();
+extern int TestCommandLineArguments();
 }

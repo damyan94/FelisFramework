@@ -648,7 +648,7 @@ void PrintVisualSample()
 
 } // namespace
 
-void TestLogger()
+int TestLogger()
 {
 	TestReporter r("LoggerTest");
 
@@ -676,6 +676,7 @@ void TestLogger()
 	r.PrintSummary();
 
 	PrintVisualSample();
+	return r.GetFailures();
 }
 
 } // namespace Test

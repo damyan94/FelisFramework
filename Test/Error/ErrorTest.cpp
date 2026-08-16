@@ -168,7 +168,7 @@ void TestRegistryFallbackForNegativeCode(TestReporter& r)
 
 } // namespace
 
-void TestError()
+int TestError()
 {
 	TestReporter r("ErrorTest");
 
@@ -186,6 +186,7 @@ void TestError()
 	TestRegistryFallbackForNegativeCode(r);
 
 	r.PrintSummary();
+	return r.GetFailures();
 }
 
 } // namespace Test

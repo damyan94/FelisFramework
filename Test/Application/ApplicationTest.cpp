@@ -132,7 +132,7 @@ void TestRuntimeFailureTakesPriority(TestReporter& r)
 
 } // namespace
 
-void TestApplicationLifecycle()
+int TestApplicationLifecycle()
 {
 	TestReporter r("ApplicationTest");
 
@@ -143,6 +143,7 @@ void TestApplicationLifecycle()
 	TestRuntimeFailureTakesPriority(r);
 
 	r.PrintSummary();
+	return r.GetFailures();
 }
 
 } // namespace Test

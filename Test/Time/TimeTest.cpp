@@ -120,7 +120,7 @@ void TestDateTime_ToStringTimepointFormatMatchesShape(TestReporter& r)
 
 } // namespace
 
-void TestTime()
+int TestTime()
 {
 	TestReporter r("TimeTest");
 
@@ -138,6 +138,7 @@ void TestTime()
 	TestDateTime_ToStringTimepointFormatMatchesShape(r);
 
 	r.PrintSummary();
+	return r.GetFailures();
 }
 
 } // namespace Test

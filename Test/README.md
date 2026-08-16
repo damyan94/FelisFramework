@@ -30,5 +30,6 @@ The current suites cover:
 Suites are called explicitly from `TestApplication::OnRun()`. New suites should
 follow the existing test reporter and manual registration convention.
 
-Test summaries must currently be inspected manually. Test failures are not yet
-propagated through the executable’s process exit status.
+Each suite prints its detailed summary to the console. The executable returns
+zero when every check passes and one when any check fails. Application lifecycle
+errors retain their existing nonzero application error codes.

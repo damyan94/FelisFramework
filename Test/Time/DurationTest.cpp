@@ -108,7 +108,7 @@ void TestStreamInsertionPrintsNanosecondValue(TestReporter& r)
 
 } // namespace
 
-void TestDuration()
+int TestDuration()
 {
 	TestReporter r("DurationTest");
 
@@ -123,6 +123,7 @@ void TestDuration()
 	TestStreamInsertionPrintsNanosecondValue(r);
 
 	r.PrintSummary();
+	return r.GetFailures();
 }
 
 } // namespace Test

@@ -304,7 +304,7 @@ void TestManagerLevelQueriesOnFreeSlotAreSafe(TestReporter& r)
 
 } // namespace
 
-void TestTimers()
+int TestTimers()
 {
 	TestReporter r("TimerTest");
 
@@ -324,6 +324,7 @@ void TestTimers()
 	TestManagerLevelQueriesOnFreeSlotAreSafe(r);
 
 	r.PrintSummary();
+	return r.GetFailures();
 }
 
 } // namespace Test

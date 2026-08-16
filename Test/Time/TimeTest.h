@@ -2,5 +2,5 @@
 
 namespace Test
 {
-extern void TestTime();
+extern int TestTime();
 }

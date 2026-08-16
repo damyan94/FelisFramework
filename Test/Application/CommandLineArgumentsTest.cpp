@@ -304,7 +304,7 @@ void TestEmptyArgumentVector(TestReporter& r)
 
 } // namespace
 
-void TestCommandLineArguments()
+int TestCommandLineArguments()
 {
 	TestReporter r("CommandLineArgumentsTest");
 
@@ -319,6 +319,7 @@ void TestCommandLineArguments()
 	TestEmptyArgumentVector(r);
 
 	r.PrintSummary();
+	return r.GetFailures();
 }
 
 } // namespace Test

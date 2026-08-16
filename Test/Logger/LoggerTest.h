@@ -2,5 +2,5 @@
 
 namespace Test
 {
-extern void TestLogger();
+extern int TestLogger();
 }

@@ -15,6 +15,11 @@ TestApplication::TestApplication(int argC, char** argV)
 {
 }
 
+int TestApplication::GetFailures() const
+{
+	return m_Failures;
+}
+
 ApplicationError TestApplication::OnInit()
 {
 	return EApplicationErrorCode::Success;
@@ -22,14 +27,14 @@ ApplicationError TestApplication::OnInit()
 
 ApplicationError TestApplication::OnRun()
 {
-	Test::TestApplicationLifecycle();
-	Test::TestCommandLineArguments();
-	Test::TestError();
-	Test::TestLogger();
-
-	Test::TestDuration();
-	Test::TestTime();
-	Test::TestTimers();
+	m_Failures = 0;
+	m_Failures += Test::TestApplicationLifecycle();
+	m_Failures += Test::TestCommandLineArguments();
+	m_Failures += Test::TestError();
+	m_Failures += Test::TestLogger();
+	m_Failures += Test::TestDuration();
+	m_Failures += Test::TestTime();
+	m_Failures += Test::TestTimers();
 
 	return EApplicationErrorCode::Success;
 }

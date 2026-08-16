@@ -10,7 +10,8 @@ int main(int argC, char** argV)
 	if (ec)
 	{
 		LogError(ec);
+		return ec.GetErrorCodeInt();
 	}
 
-	return ec.GetErrorCodeInt();
+	return app.GetFailures();
 }

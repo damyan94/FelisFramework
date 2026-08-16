@@ -1,23 +1,23 @@
 #pragma once
 
+#if defined(_MSC_VER)
+#include <intrin.h>
+#endif
+
 #define _Stringify_(X) #X
 #define _Stringify(X) _Stringify_(X)
 
-#if defined NDEBUG
-#define _DebugBreak
-
-#else // !NDEBUG
-#if defined(_WIN32)
+#if defined(NDEBUG)
+#define _DebugBreak ((void)0)
+#elif defined(_MSC_VER)
 #define _DebugBreak __debugbreak()
-
-#elif defined(__linux__)
-#define _DebugBreak __asm__("int3")
-
+#elif defined(__clang__)
+#define _DebugBreak __builtin_debugtrap()
+#elif defined(__GNUC__)
+#define _DebugBreak __builtin_trap()
 #else
-#define _DebugBreak #warning Debug break not implemented for this platform
+#define _DebugBreak ((void)0)
 #endif
-
-#endif // NDEBUG
 
 // TODO Maybe use std::source_location::current
 #define _DebugBreakInfo(_Reason) "File: " __FILE__ "; Line: " _Stringify(__LINE__) "; Reason: " _Stringify(_Reason)
@@ -141,4 +141,3 @@
 	public:                                                                                                            \
 		_Type value = _DefaultValue;                                                                                   \
 	};
-

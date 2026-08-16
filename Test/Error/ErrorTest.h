@@ -2,5 +2,5 @@
 
 namespace Test
 {
-extern void TestError();
+extern int TestError();
 }

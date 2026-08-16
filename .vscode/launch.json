@@ -5,8 +5,8 @@
             "name": "Debug Example",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Build/FelisExample",
-            "cwd": "${workspaceFolder}/Build",
+            "program": "${workspaceFolder}/Build/Example/FelisExample",
+            "cwd": "${workspaceFolder}/Build/Example",
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
             "setupCommands": [
@@ -22,8 +22,8 @@
             "name": "Debug Test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Build/FelisTest",
-            "cwd": "${workspaceFolder}/Build",
+            "program": "${workspaceFolder}/Build/Test/FelisTest",
+            "cwd": "${workspaceFolder}/Build/Test",
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
             "setupCommands": [
@@ -39,8 +39,8 @@
             "name": "Release Example",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Build/FelisExample",
-            "cwd": "${workspaceFolder}/Build",
+            "program": "${workspaceFolder}/Build/Example/FelisExample",
+            "cwd": "${workspaceFolder}/Build/Example",
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
             "setupCommands": [
@@ -56,8 +56,8 @@
             "name": "Release Test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Build/FelisTest",
-            "cwd": "${workspaceFolder}/Build",
+            "program": "${workspaceFolder}/Build/Test/FelisTest",
+            "cwd": "${workspaceFolder}/Build/Test",
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
             "setupCommands": [
