@@ -276,6 +276,14 @@ void TestNamedArgumentValidation(TestReporter& r)
 	TEST_CHECK(r, !allowedError);
 	TEST_CHECK(r, unexpectedArguments.empty());
 
+	args.RemoveAllowedArgument("alpha");
+
+	const auto removedError = args.ValidateNamedArguments(unexpectedArguments);
+	TEST_CHECK(r, removedError.GetErrorCode() == ECommandLineArgumentErrorCode::UnexpectedArgument);
+	TEST_CHECK(r, unexpectedArguments.size() == 1);
+	TEST_CHECK(r, unexpectedArguments.contains("alpha"));
+
+	args.AddAllowedArgument("alpha");
 	args.ClearAllowedArguments();
 
 	const auto emptyAllowedError = args.ValidateNamedArguments(unexpectedArguments);
@@ -302,6 +310,22 @@ void TestEmptyArgumentVector(TestReporter& r)
 	TEST_CHECK(r, args.GetPositionalArguments().empty());
 }
 
+void TestNullArgumentEntriesAreIgnored(TestReporter& r)
+{
+	char  option[]	   = "--verbose";
+	char  positional[] = "input.txt";
+	char* argV[]	   = {nullptr, option, nullptr, positional};
+	int	  argC		   = static_cast<int>(sizeof(argV) / sizeof(argV[0]));
+
+	CommandLineArguments args(argC, argV);
+
+	TEST_CHECK(r, args.GetProgramName().empty());
+	TEST_CHECK(r, args.HasArgument("verbose"));
+	TEST_CHECK(r, args.GetArgument("verbose") == "1");
+	TEST_CHECK(r, args.GetPositionalArguments().size() == 1);
+	TEST_CHECK(r, args.GetPositionalArguments()[0] == "input.txt");
+}
+
 } // namespace
 
 int TestCommandLineArguments()
@@ -317,6 +341,7 @@ int TestCommandLineArguments()
 	TestArgumentVectors(r);
 	TestNamedArgumentValidation(r);
 	TestEmptyArgumentVector(r);
+	TestNullArgumentEntriesAreIgnored(r);
 
 	r.PrintSummary();
 	return r.GetFailures();

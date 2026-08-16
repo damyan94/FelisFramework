@@ -11,28 +11,61 @@ namespace Test
 namespace
 {
 
-void TestTime_NowElapsedIsNearZero(TestReporter& r)
+class TestClock
 {
-	Time t;
+public:
+	using duration	 = std::chrono::nanoseconds;
+	using rep		 = duration::rep;
+	using period	 = duration::period;
+	using time_point = std::chrono::time_point<TestClock>;
 
-	TEST_CHECK(r, t.GetElapsed() < Duration::Milliseconds(50));
-}
+	static constexpr bool is_steady = true;
 
-void TestTime_GetElapsedGrowsWithRealTime(TestReporter& r)
+	static time_point now()
+	{
+		return s_Now;
+	}
+
+	static void Reset()
+	{
+		s_Now = time_point{};
+	}
+
+	static void Advance(duration elapsed)
+	{
+		s_Now += elapsed;
+	}
+
+private:
+	inline static time_point s_Now{};
+};
+
+using TestTime = BasicTime<TestClock>;
+
+void TestTime_GetElapsedUsesClock(TestReporter& r)
 {
-	Time t;
-	std::this_thread::sleep_for(std::chrono::milliseconds(20));
+	TestClock::Reset();
+	TestTime t;
 
-	TEST_CHECK(r, t.GetElapsed() >= Duration::Milliseconds(15));
+	TEST_CHECK(r, t.GetElapsed() == Duration::Zero);
+
+	TestClock::Advance(std::chrono::milliseconds(20));
+	TEST_CHECK(r, t.GetElapsed() == Duration::Milliseconds(20));
 }
 
 void TestTime_ResetRestartsElapsed(TestReporter& r)
 {
-	Time t;
-	std::this_thread::sleep_for(std::chrono::milliseconds(20));
-	t.Reset();
+	TestClock::Reset();
+	TestTime t;
 
-	TEST_CHECK(r, t.GetElapsed() < Duration::Milliseconds(15));
+	TestClock::Advance(std::chrono::milliseconds(20));
+	TEST_CHECK(r, t.GetElapsed() == Duration::Milliseconds(20));
+
+	t.Reset();
+	TEST_CHECK(r, t.GetElapsed() == Duration::Zero);
+
+	TestClock::Advance(std::chrono::milliseconds(5));
+	TEST_CHECK(r, t.GetElapsed() == Duration::Milliseconds(5));
 }
 
 void TestTime_OperatorPlusMinusDurationShiftsTimepoint(TestReporter& r)
@@ -96,7 +129,7 @@ void TestDateTime_ToStringDefaultFormatMatchesShape(TestReporter& r)
 	DateTime dt;
 
 	// dd.mm.yyyy HH:MM:SS.ffffff
-	static const std::regex pattern(R"(^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{6}$)");
+	static const std::regex pattern(R"(^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}\.\d{6}$)");
 	TEST_CHECK(r, std::regex_match(TimeFormat::ToString(dt, ETimeStringFormat::Default), pattern));
 }
 
@@ -105,7 +138,7 @@ void TestDateTime_ToStringTimestampFormatMatchesShape(TestReporter& r)
 	DateTime dt;
 
 	// yyyymmddHHMMSS.ffffff
-	static const std::regex pattern(R"(^\d{14}.\d{6}$)");
+	static const std::regex pattern(R"(^\d{14}\.\d{6}$)");
 	TEST_CHECK(r, std::regex_match(TimeFormat::ToString(dt, ETimeStringFormat::Timestamp), pattern));
 }
 
@@ -124,8 +157,7 @@ int TestTime()
 {
 	TestReporter r("TimeTest");
 
-	TestTime_NowElapsedIsNearZero(r);
-	TestTime_GetElapsedGrowsWithRealTime(r);
+	TestTime_GetElapsedUsesClock(r);
 	TestTime_ResetRestartsElapsed(r);
 	TestTime_OperatorPlusMinusDurationShiftsTimepoint(r);
 	TestTime_OperatorPlusEqualsMinusEqualsMutateInPlace(r);

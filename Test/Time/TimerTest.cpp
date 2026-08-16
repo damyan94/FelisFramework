@@ -84,20 +84,23 @@ void TestPulseFiresRepeatedly(TestReporter& r)
 	t.Stop();
 }
 
-void TestPulseCatchesUpAfterLongUpdate(TestReporter& r)
+void TestPulseCoalescesLongUpdateAndPreservesRemainder(TestReporter& r)
 {
 	auto& tm = TimerManager::Instance();
 
+	int	  tickCount = 0;
 	Timer t;
-	t.Start(ETimerType::Pulse, Duration::Milliseconds(10));
+	t.Start(ETimerType::Pulse, Duration::Milliseconds(10), [&tickCount] { ++tickCount; });
 
 	tm.Update(Duration::Milliseconds(35));
 
+	TEST_CHECK(r, tickCount == 1);
 	TEST_CHECK(r, t.GetElapsed() == Duration::Milliseconds(5));
 
 	tm.Update(Duration::Milliseconds(5));
 
-	TEST_CHECK(r, (t.GetElapsed() == Duration::Milliseconds(5)) == 0);
+	TEST_CHECK(r, tickCount == 2);
+	TEST_CHECK(r, t.GetElapsed() == Duration::Zero);
 
 	t.Stop();
 }
@@ -173,6 +176,21 @@ void TestGettersReportCorrectValues(TestReporter& r)
 	t.Stop();
 }
 
+void TestIntervalIsClampedToSupportedRange(TestReporter& r)
+{
+	Timer belowMinimum;
+	belowMinimum.Start(ETimerType::Oneshot, Timer::MinDuration - Duration::Nanoseconds(1));
+
+	TEST_CHECK(r, belowMinimum.GetInterval() == Timer::MinDuration);
+	belowMinimum.Stop();
+
+	Timer aboveMaximum;
+	aboveMaximum.Start(ETimerType::Oneshot, Timer::MaxDuration + Duration::Nanoseconds(1));
+
+	TEST_CHECK(r, aboveMaximum.GetInterval() == Timer::MaxDuration);
+	aboveMaximum.Stop();
+}
+
 void TestStaleIdIsInvalidatedAfterSlotReuse(TestReporter& r)
 {
 	auto& tm = TimerManager::Instance();
@@ -184,16 +202,33 @@ void TestStaleIdIsInvalidatedAfterSlotReuse(TestReporter& r)
 	t1.Stop();
 	TEST_CHECK(r, !tm.IsValid(staleId));
 
-	// starting a new timer is likely to reuse the freed slot (LIFO free list)
+	// The LIFO free list should immediately reuse the released slot.
 	Timer t2;
 	t2.Start(ETimerType::Oneshot, Duration::Seconds(1), [] {});
+	const TimerId replacementId = t2.GetId();
 
-	// the stale id from t1 must never be reported as valid again,
-	// even if it aliases the same slot index with a new generation
+	TEST_CHECK(r, replacementId.Index == staleId.Index);
+	TEST_CHECK(r, replacementId.Generation != staleId.Generation);
 	TEST_CHECK(r, !tm.IsValid(staleId));
-	TEST_CHECK(r, tm.IsValid(t2.GetId()));
+	TEST_CHECK(r, tm.IsValid(replacementId));
 
 	t2.Stop();
+}
+
+void TestDestructorStopsActiveTimer(TestReporter& r)
+{
+	auto& tm = TimerManager::Instance();
+
+	TimerId id;
+	{
+		Timer t;
+		t.Start(ETimerType::Pulse, Duration::Seconds(1));
+		id = t.GetId();
+
+		TEST_CHECK(r, tm.IsValid(id));
+	}
+
+	TEST_CHECK(r, !tm.IsValid(id));
 }
 
 void TestMoveConstructionTransfersOwnership(TestReporter& r)
@@ -248,7 +283,7 @@ void TestMoveAssignmentStopsPreviousOwnedTimer(TestReporter& r)
 	TEST_CHECK(r, tickCountB == 1);
 }
 
-void TestOneshotStoppingItselfFromCallback(TestReporter& r)
+void TestOneshotIsStoppedBeforeCallback(TestReporter& r)
 {
 	auto& tm = TimerManager::Instance();
 
@@ -312,14 +347,16 @@ int TestTimers()
 	TestOneshotDoesNotFireEarly(r);
 	TestOneshotFiresOnceAndStops(r);
 	TestPulseFiresRepeatedly(r);
-	TestPulseCatchesUpAfterLongUpdate(r);
+	TestPulseCoalescesLongUpdateAndPreservesRemainder(r);
 	TestPauseStopsElapsedAccumulation(r);
 	TestRestartResetsElapsed(r);
 	TestGettersReportCorrectValues(r);
+	TestIntervalIsClampedToSupportedRange(r);
 	TestStaleIdIsInvalidatedAfterSlotReuse(r);
+	TestDestructorStopsActiveTimer(r);
 	TestMoveConstructionTransfersOwnership(r);
 	TestMoveAssignmentStopsPreviousOwnedTimer(r);
-	TestOneshotStoppingItselfFromCallback(r);
+	TestOneshotIsStoppedBeforeCallback(r);
 	TestMultipleIndependentTimersDoNotInterfere(r);
 	TestManagerLevelQueriesOnFreeSlotAreSafe(r);
 

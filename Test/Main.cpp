@@ -13,5 +13,5 @@ int main(int argC, char** argV)
 		return ec.GetErrorCodeInt();
 	}
 
-	return app.GetFailures();
+	return app.GetFailures() == 0 ? 0 : 1;
 }

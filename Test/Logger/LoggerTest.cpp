@@ -52,6 +52,25 @@ private:
 	int						 m_FlushCount = 0;
 };
 
+// Counts writes in externally owned storage so destination removal
+// and replacement can be tested without retaining dangling pointers.
+class LogWriterCounter final : public ILogWriter
+{
+public:
+	explicit LogWriterCounter(int& writes)
+		: m_Writes(writes)
+	{
+	}
+
+	void Write(const LogEntry&, const ILogFormatter&) override
+	{
+		++m_Writes;
+	}
+
+private:
+	int& m_Writes;
+};
+
 // Builds a Logger wired to a fresh LogWriterMemory + the real
 // LogFormatterConsole, and hands back a non-owning pointer to the
 // writer so tests can inspect what was captured.
@@ -456,41 +475,42 @@ void TestPrefixVariations(TestReporter& r)
 // replace rather than duplicate.
 void TestDestinationManagement(TestReporter& r)
 {
+	int writerAWrites = 0;
+	int writerBWrites = 0;
+	int writerCWrites = 0;
+
 	Logger logger;
 	logger.SetLogPrefix("DestTest");
 	logger.SetLogLevel(ELogLevel::Debug);
 	logger.SetLogFlags(LogFlags::All);
 
-	auto			 writerAOwned = std::make_unique<LogWriterMemory>();
-	LogWriterMemory* writerA	  = writerAOwned.get();
-	logger.AddLogDestination(
-		{ELogDestinationType::Console, std::move(writerAOwned), std::make_unique<LogFormatterConsole>()});
+	logger.AddLogDestination({ELogDestinationType::Console,
+							  std::make_unique<LogWriterCounter>(writerAWrites),
+							  std::make_unique<LogFormatterConsole>()});
 
 	logger.Log(ELogLevel::Info, "msg1");
-	TEST_CHECK(r, writerA->GetEntries().size() == 1);
+	TEST_CHECK(r, writerAWrites == 1);
 
 	logger.RemoveLogDestination(ELogDestinationType::Console);
 	logger.Log(ELogLevel::Info, "msg2 - should not be captured anywhere");
-	TEST_CHECK(r, writerA->GetEntries().size() == 1); // unchanged, no longer attached
+	TEST_CHECK(r, writerAWrites == 1);
 
-	auto			 writerBOwned = std::make_unique<LogWriterMemory>();
-	LogWriterMemory* writerB	  = writerBOwned.get();
-	logger.AddLogDestination(
-		{ELogDestinationType::Console, std::move(writerBOwned), std::make_unique<LogFormatterConsole>()});
+	logger.AddLogDestination({ELogDestinationType::Console,
+							  std::make_unique<LogWriterCounter>(writerBWrites),
+							  std::make_unique<LogFormatterConsole>()});
 
 	logger.Log(ELogLevel::Info, "msg3");
-	TEST_CHECK(r, writerB->GetEntries().size() == 1);
-	TEST_CHECK(r, writerA->GetEntries().size() == 1); // still untouched
+	TEST_CHECK(r, writerBWrites == 1);
+	TEST_CHECK(r, writerAWrites == 1);
 
 	// adding another destination of the same type should replace writerB, not add a second one
-	auto			 writerCOwned = std::make_unique<LogWriterMemory>();
-	LogWriterMemory* writerC	  = writerCOwned.get();
-	logger.AddLogDestination(
-		{ELogDestinationType::Console, std::move(writerCOwned), std::make_unique<LogFormatterConsole>()});
+	logger.AddLogDestination({ELogDestinationType::Console,
+							  std::make_unique<LogWriterCounter>(writerCWrites),
+							  std::make_unique<LogFormatterConsole>()});
 
 	logger.Log(ELogLevel::Info, "msg4");
-	TEST_CHECK(r, writerC->GetEntries().size() == 1);
-	TEST_CHECK(r, writerB->GetEntries().size() == 1); // did not receive msg4 - proves replacement, not duplication
+	TEST_CHECK(r, writerCWrites == 1);
+	TEST_CHECK(r, writerBWrites == 1);
 }
 
 // Flush() should reach every attached writer's Flush(), and must not
@@ -507,8 +527,7 @@ void TestFlush(TestReporter& r)
 	TEST_CHECK(r, writer->GetFlushCount() == 2);
 
 	logger.RemoveLogDestination(ELogDestinationType::Console);
-	logger.Flush();								 // must not crash with no destinations
-	TEST_CHECK(r, writer->GetFlushCount() == 2); // unchanged, no longer attached
+	logger.Flush(); // must not crash with no destinations
 }
 
 // 4 threads logging concurrently: every message must be captured

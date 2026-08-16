@@ -1,7 +1,8 @@
 # Felis tests
 
 The tests use a deliberately small hand-written reporter. There is no external
-test framework and no automatic test registration.
+test framework. CMake registers the test executable with CTest for native builds
+and cross-compilation builds that provide `CMAKE_CROSSCOMPILING_EMULATOR`.
 
 ## Building
 
@@ -15,8 +16,17 @@ cmake --build Build -j4
 ## Running
 
 ```bash
-./Build/FelisTest
+ctest --test-dir Build --output-on-failure
 ```
+
+For multi-configuration generators, select the configuration as well:
+
+```bash
+ctest --test-dir Build -C Debug --output-on-failure
+```
+
+Cross-compiled tests without an emulator must be copied to and run on the target
+platform, such as an Android device.
 
 The current suites cover:
 
