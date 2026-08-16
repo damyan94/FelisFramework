@@ -341,6 +341,37 @@ void TestWriter_FlushDoesNotCrashOrWriteAnything(TestReporter& r)
 
 // Logger - integration tests, real formatter, memory-captured writer.
 
+void TestEnabledStateControlsLogging(TestReporter& r)
+{
+	LogWriterMemory* writer = nullptr;
+	Logger			 logger = MakeMemoryLogger(writer, "EnabledTest", ELogLevel::Debug);
+
+	TEST_CHECK(r, logger.IsEnabled());
+	TEST_CHECK(r, logger.IsLogLevelEnabled(ELogLevel::Debug));
+
+	logger.SetEnabled(false);
+
+	TEST_CHECK(r, !logger.IsEnabled());
+	TEST_CHECK(r, !logger.IsLogLevelEnabled(ELogLevel::Critical));
+	TEST_CHECK(r, !logger.IsLogLevelEnabled(ELogLevel::Debug));
+
+	LogAllLevels(logger);
+	logger.LogFmt(ELogLevel::Info, "formatted {}", 42);
+
+	TEST_CHECK(r, writer->GetEntries().empty());
+	TEST_CHECK(r, logger.GetLogLevel() == ELogLevel::Debug);
+
+	logger.SetEnabled(true);
+
+	TEST_CHECK(r, logger.IsEnabled());
+	TEST_CHECK(r, logger.IsLogLevelEnabled(ELogLevel::Debug));
+
+	logger.Log(ELogLevel::Info, "enabled");
+
+	TEST_CHECK(r, writer->GetEntries().size() == 1);
+	TEST_CHECK(r, writer->GetEntries()[0].Message == "enabled");
+}
+
 // Only messages with level <= the configured level should be captured.
 // Levels are Critical..Debug in increasing verbosity (per IsLogLevelEnabled),
 // so setting the level to array index i should let exactly i+1 messages through.
@@ -354,14 +385,14 @@ void TestLogLevelFiltering(TestReporter& r)
 		ELogLevel::Debug,
 	};
 
-	for (int i = 0; i < 5; ++i)
+	for (size_t i = 0; i < std::size(levels); ++i)
 	{
 		LogWriterMemory* writer = nullptr;
 		Logger			 logger = MakeMemoryLogger(writer, "LevelTest", levels[i]);
 
 		LogAllLevels(logger);
 
-		TEST_CHECK(r, (int)writer->GetEntries().size() == i + 1);
+		TEST_CHECK(r, writer->GetEntries().size() == i + 1);
 
 		if (!writer->GetEntries().empty())
 		{
@@ -682,6 +713,7 @@ int TestLogger()
 	TestWriter_RoutesAboveWarningToCoutAtOrBelowToCerr(r);
 	TestWriter_FlushDoesNotCrashOrWriteAnything(r);
 
+	TestEnabledStateControlsLogging(r);
 	TestLogLevelFiltering(r);
 	TestLevelFlagInteraction(r);
 	TestLogMethodVariants(r);

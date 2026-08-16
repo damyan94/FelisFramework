@@ -13,13 +13,13 @@ TimerId TimerManager::Start(ETimerType timerType, Duration interval, TimerCallba
 {
 	if (interval < Timer::MinDuration || interval > Timer::MaxDuration)
 	{
-		LogError("Timer interval ",
-				 interval,
-				 " is not in the range of [",
-				 Timer::MinDuration,
-				 " - ",
-				 Timer::MaxDuration,
-				 "]; clamping it.");
+		LogWarning("Timer interval ",
+				   interval,
+				   " is not in the range of [",
+				   Timer::MinDuration,
+				   " - ",
+				   Timer::MaxDuration,
+				   "]; clamping it.");
 		interval = std::clamp(interval, Timer::MinDuration, Timer::MaxDuration);
 	}
 

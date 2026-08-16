@@ -178,6 +178,11 @@ void TestGettersReportCorrectValues(TestReporter& r)
 
 void TestIntervalIsClampedToSupportedRange(TestReporter& r)
 {
+	// Temporarily suppress the expected clamping warnings.
+	auto&	   logger			 = Logger::GetGlobalLogger();
+	const bool wasLoggingEnabled = logger.IsEnabled();
+	logger.SetEnabled(false);
+
 	Timer belowMinimum;
 	belowMinimum.Start(ETimerType::Oneshot, Timer::MinDuration - Duration::Nanoseconds(1));
 
@@ -189,6 +194,8 @@ void TestIntervalIsClampedToSupportedRange(TestReporter& r)
 
 	TEST_CHECK(r, aboveMaximum.GetInterval() == Timer::MaxDuration);
 	aboveMaximum.Stop();
+
+	logger.SetEnabled(wasLoggingEnabled);
 }
 
 void TestStaleIdIsInvalidatedAfterSlotReuse(TestReporter& r)

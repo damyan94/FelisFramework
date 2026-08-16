@@ -30,11 +30,13 @@ public:
 
 	static Logger& GetGlobalLogger();
 
+	void SetEnabled(bool enabled);
 	void SetLogPrefix(const std::string& prefix);
 	void SetLogLevel(ELogLevel level);
 	void SetLogFlags(uint8_t flags);
 	void SetLogFlags(LogFlags flags);
 
+	bool			   IsEnabled() const;
 	const std::string& GetLogPrefix() const;
 	ELogLevel		   GetLogLevel() const;
 	bool			   IsLogLevelEnabled(ELogLevel level) const;
@@ -55,6 +57,7 @@ private:
 	void Log(const LogEntry& log);
 
 private:
+	bool			m_IsEnabled = true;
 	std::string		m_Prefix;
 	ELogLevel		m_Level = ELogLevel::Warning;
 	LogFlags		m_Flags = {LogFlags::Time | LogFlags::Level | LogFlags::Prefix};

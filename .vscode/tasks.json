@@ -4,10 +4,10 @@
         {
             "label": "build_debug",
             "type": "shell",
-            "command": "cd Build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DFELIS_BUILD_EXAMPLE=On -DFELIS_BUILD_TEST=On && cmake --build . -j4",
+            "command": "cmake --preset linux-debug && cmake --build --preset linux-debug",
             "group": {
                 "kind": "build",
-                "cwd": "${workspaceFolder}/Build",
+                "cwd": "${workspaceFolder}",
                 "isDefault": true
             },
             "problemMatcher": [
@@ -17,10 +17,10 @@
         {
             "label": "build_release",
             "type": "shell",
-            "command": "cd Build && cmake .. -DCMAKE_BUILD_TYPE=Release -DFELIS_BUILD_EXAMPLE=On -DFELIS_BUILD_TEST=On && cmake --build . -j4",
+            "command": "cmake --preset linux-release && cmake --build --preset linux-release",
             "group": {
                 "kind": "build",
-                "cwd": "${workspaceFolder}/Build",
+                "cwd": "${workspaceFolder}",
                 "isDefault": true
             },
             "problemMatcher": [

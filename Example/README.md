@@ -6,11 +6,16 @@ application exit codes without introducing additional dependencies.
 
 ## Building
 
-From the repository root:
+The project CMake presets enable the example by default. Platform-specific build
+and execution instructions are available in:
 
-```bash
-cmake -S . -B Build -DFELIS_BUILD_EXAMPLE=ON
-cmake --build Build -j4
+- [Linux build, run and debug](../Docs/LINUX_BUILD_RUN_DEBUG.md)
+- [Android build, run and debug](../Docs/ANDROID_BUILD_RUN_DEBUG.md)
+
+The executable is produced under the selected platform build directory in:
+
+```text
+Example/FelisExample
 ```
 
 ## Usage
@@ -31,10 +36,13 @@ Options:
 Examples:
 
 ```bash
-./Build/FelisExample --mode=lines README.md
-./Build/FelisExample --mode=words --verbose README.md
-./Build/FelisExample --help
+Build/Linux/Debug/Example/FelisExample --mode=lines README.md
+Build/Linux/Debug/Example/FelisExample --mode=words --verbose README.md
+Build/Linux/Debug/Example/FelisExample --help
 ```
+
+Cross-compiled executables must be deployed to and run on their target
+platform, as described in the corresponding platform guide.
 
 Exactly one input file is required unless `--help` is present. The line count
 includes a final non-empty line when the file does not end with a newline.

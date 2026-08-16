@@ -16,8 +16,15 @@ all kinds of C++ applications - CLI tools, UI applications, games and others.
 Felis intentionally uses precompiled headers. Standard-library headers are
 centralized in `Felis/stdafx.h`.
 
-The framework is designed and tested on Linux. Windows compatibility is
-desired, but is not currently tested or expected to work out of the box.
+## Supported platforms
+
+FelisFramework is currently built and tested on:
+
+- Linux;
+- Android ARM64, API 26 and newer.
+
+Windows 10 and newer and Emscripten are planned targets, but are not yet
+documented or verified.
 
 ## Requirements
 
@@ -26,34 +33,25 @@ desired, but is not currently tested or expected to work out of the box.
 
 ## Building
 
-Build the library:
+The project provides CMake presets that place each platform and configuration
+in a separate directory under `Build/`.
+
+For a Linux Debug build:
 
 ```bash
-cmake -S . -B Build
-cmake --build Build -j4
+cmake --preset linux-debug
+cmake --build --preset linux-debug
+ctest --preset linux-debug
 ```
 
-Alternatively:
+The presets build the static library, example and tests.
 
-```bash
-./build.sh
-```
+Detailed platform instructions:
 
-Enable the example and tests when configuring:
+- [Linux build, run and debug](Docs/LINUX_BUILD_RUN_DEBUG.md)
+- [Android build, run and debug](Docs/ANDROID_BUILD_RUN_DEBUG.md)
 
-```bash
-cmake -S . -B Build -DFELIS_BUILD_EXAMPLE=ON -DFELIS_BUILD_TEST=ON
-cmake --build Build -j4
-```
-
-Run them with:
-
-```bash
-./Build/FelisExample --help
-./Build/FelisTest
-```
-
-Further information:
+Component documentation:
 
 - [Example application](Example/README.md)
 - [Tests](Test/README.md)
@@ -78,8 +76,9 @@ Applications derive from `Application` and implement `OnInit()`, `OnRun()` and
 `OnDeinit()`. Command-line arguments are available through
 `GetCommandLineArguments()`.
 
-Installation, package export and automated test registration are deliberate
-future concerns and are not currently provided.
+Installation and package export are deliberate future concerns and are not
+currently provided. When tests are enabled, runnable native or emulated test
+executables are registered with CTest.
 
 ## License
 

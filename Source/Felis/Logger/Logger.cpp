@@ -24,6 +24,11 @@ Logger& Logger::GetGlobalLogger()
 	return gLogger;
 }
 
+void Logger::SetEnabled(bool enabled)
+{
+	m_IsEnabled = enabled;
+}
+
 void Logger::SetLogPrefix(const std::string& prefix)
 {
 	m_Prefix = prefix;
@@ -44,6 +49,11 @@ void Logger::SetLogFlags(LogFlags flags)
 	m_Flags = flags;
 }
 
+bool Logger::IsEnabled() const
+{
+	return m_IsEnabled;
+}
+
 const std::string& Logger::GetLogPrefix() const
 {
 	return m_Prefix;
@@ -56,7 +66,7 @@ ELogLevel Logger::GetLogLevel() const
 
 bool Logger::IsLogLevelEnabled(ELogLevel level) const
 {
-	return level <= m_Level;
+	return m_IsEnabled && level <= m_Level;
 }
 
 LogFlags Logger::GetLogFlags() const

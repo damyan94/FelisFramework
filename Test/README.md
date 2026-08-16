@@ -4,26 +4,13 @@ The tests use a deliberately small hand-written reporter. There is no external
 test framework. CMake registers the test executable with CTest for native builds
 and cross-compilation builds that provide `CMAKE_CROSSCOMPILING_EMULATOR`.
 
-## Building
+## Building and running
 
-From the repository root:
+The project CMake presets enable the tests by default. Detailed build, execution
+and debugging instructions are available in:
 
-```bash
-cmake -S . -B Build -DFELIS_BUILD_TEST=ON
-cmake --build Build -j4
-```
-
-## Running
-
-```bash
-ctest --test-dir Build --output-on-failure
-```
-
-For multi-configuration generators, select the configuration as well:
-
-```bash
-ctest --test-dir Build -C Debug --output-on-failure
-```
+- [Linux build, run and debug](../Docs/LINUX_BUILD_RUN_DEBUG.md)
+- [Android build, run and debug](../Docs/ANDROID_BUILD_RUN_DEBUG.md)
 
 Cross-compiled tests without an emulator must be copied to and run on the target
 platform, such as an Android device.
