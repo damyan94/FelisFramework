@@ -25,8 +25,8 @@ public:
 	Logger()  = default;
 	~Logger() = default;
 
-	DISABLE_COPY(Logger);
-	DEFAULT_MOVE(Logger);
+	FELIS_DISABLE_COPY(Logger);
+	FELIS_DEFAULT_MOVE(Logger);
 
 	static Logger& GetGlobalLogger();
 

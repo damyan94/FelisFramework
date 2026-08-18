@@ -2,7 +2,12 @@
 
 template <typename T>
 concept ChronoDuration =
-	std::is_same_v<std::remove_cvref_t<T>, std::chrono::duration<typename T::rep, typename T::period>>;
+	requires {
+		typename std::remove_cvref_t<T>::rep;
+		typename std::remove_cvref_t<T>::period;
+	} &&
+	std::same_as<std::remove_cvref_t<T>,
+				 std::chrono::duration<typename std::remove_cvref_t<T>::rep, typename std::remove_cvref_t<T>::period>>;
 
 // A duration of time, a time interval if you will
 class Duration

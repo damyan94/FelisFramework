@@ -10,7 +10,7 @@ struct ErrorData
 // A registry for additional error data
 // TODO If needed in the future, consider adding a second template parameter
 // so we can accept different types, not just ErrorData
-template <CppEnum T>
+template <ErrorCodeEnum T>
 class ErrorRegistry
 {
 public:
@@ -18,7 +18,7 @@ public:
 
 	explicit ErrorRegistry(const Container& container);
 
-	DISABLE_COPY_AND_MOVE(ErrorRegistry);
+	FELIS_DISABLE_COPY_AND_MOVE(ErrorRegistry);
 
 	const ErrorData& GetErrorData(T errorCode) const;
 
@@ -26,18 +26,26 @@ private:
 	const Container m_ErrorData;
 };
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 inline ErrorRegistry<T>::ErrorRegistry(const Container& container)
 	: m_ErrorData(container)
 {
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 inline const ErrorData& ErrorRegistry<T>::GetErrorData(T errorCode) const
 {
 	static ErrorData invalid;
 
-	ReturnIf((int)errorCode < 0 || (size_t)errorCode >= (size_t)m_ErrorData.size(), invalid);
+	using UnderlyingType = std::underlying_type_t<T>;
+	const auto index	 = static_cast<UnderlyingType>(errorCode);
 
-	return m_ErrorData[(size_t)errorCode];
+	if constexpr (std::is_signed_v<UnderlyingType>)
+	{
+		ReturnIf(index < 0, invalid);
+	}
+
+	ReturnIf(static_cast<size_t>(index) >= m_ErrorData.size(), invalid);
+
+	return m_ErrorData[static_cast<size_t>(index)];
 }

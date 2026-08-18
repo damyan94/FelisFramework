@@ -120,8 +120,8 @@ public:
 		std::cerr.rdbuf(m_OldCerrBuf);
 	}
 
-	DISABLE_COPY(StreamCapture);
-	DISABLE_MOVE(StreamCapture);
+	FELIS_DISABLE_COPY(StreamCapture);
+	FELIS_DISABLE_MOVE(StreamCapture);
 
 	std::string GetCout() const
 	{

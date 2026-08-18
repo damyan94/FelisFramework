@@ -15,8 +15,8 @@ public:
 	TimerManager()	= default;
 	~TimerManager() = default;
 
-	DISABLE_COPY(TimerManager);
-	DISABLE_MOVE(TimerManager);
+	FELIS_DISABLE_COPY(TimerManager);
+	FELIS_DISABLE_MOVE(TimerManager);
 
 	static TimerManager& Instance();
 

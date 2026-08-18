@@ -3,19 +3,10 @@
 #include <cstdint>
 
 template <typename T>
-concept CppEnum = std::is_enum_v<T>;
-
-/**
- * General requirements for enums:
- * - enums should be signed
- * - enums should start with an invalid value of -1
- * - enums should end with a count value
- */
-template <typename EnumType>
-constexpr inline bool IsEnumValueValid(EnumType value)
-{
-	return value > EnumType::Invalid && value < EnumType::Count;
-}
+concept ErrorCodeEnum = std::is_enum_v<T> && requires {
+	{ T::Count } -> std::same_as<T>;
+	requires(static_cast<std::underlying_type_t<T>>(T::Count) > 0);
+};
 
 enum class ELogDestinationType : uint8_t
 {

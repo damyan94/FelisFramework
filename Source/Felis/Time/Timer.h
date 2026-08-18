@@ -35,7 +35,7 @@ public:
 	Timer();
 	~Timer();
 
-	DISABLE_COPY(Timer);
+	FELIS_DISABLE_COPY(Timer);
 
 	Timer(Timer&& other);
 	Timer& operator=(Timer&& other);

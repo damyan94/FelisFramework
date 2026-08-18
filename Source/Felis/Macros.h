@@ -4,140 +4,147 @@
 #include <intrin.h>
 #endif
 
-#define _Stringify_(X) #X
-#define _Stringify(X) _Stringify_(X)
+#define FELIS_STRINGIFY_IMPL(Value) #Value
+#define FELIS_STRINGIFY(Value) FELIS_STRINGIFY_IMPL(Value)
 
 #if defined(NDEBUG)
-#define _DebugBreak ((void)0)
+#define FELIS_DEBUG_BREAK() ((void)0)
 #elif defined(_MSC_VER)
-#define _DebugBreak __debugbreak()
+#define FELIS_DEBUG_BREAK() __debugbreak()
 #elif defined(__clang__)
-#define _DebugBreak __builtin_debugtrap()
+#define FELIS_DEBUG_BREAK() __builtin_debugtrap()
 #elif defined(__GNUC__)
-#define _DebugBreak __builtin_trap()
+#define FELIS_DEBUG_BREAK() __builtin_trap()
 #else
-#define _DebugBreak ((void)0)
+#define FELIS_DEBUG_BREAK() ((void)0)
 #endif
 
 // TODO Maybe use std::source_location::current
-#define _DebugBreakInfo(_Reason) "File: " __FILE__ "; Line: " _Stringify(__LINE__) "; Reason: " _Stringify(_Reason)
+#define FELIS_DEBUG_BREAK_INFO(Reason)                                                                                 \
+	"File: " __FILE__ "; Line: " FELIS_STRINGIFY(__LINE__) "; Reason: " FELIS_STRINGIFY(Reason)
 
-#define Assert(...)                                                                                                    \
-	LogError(_DebugBreakInfo(__VA_ARGS__));                                                                            \
-	_DebugBreak
-
-#define ReturnIf(_Condition, ...)                                                                                      \
-	if (_Condition)                                                                                                    \
-	return __VA_ARGS__
-
-#define BreakIf(_Condition)                                                                                            \
-	if (_Condition)                                                                                                    \
-	break
-
-#define ContinueIf(_Condition)                                                                                         \
-	if (_Condition)                                                                                                    \
-	continue
-
-#define AssertReturnIf(_Condition, ...)                                                                                \
+#define Assert(Condition)                                                                                              \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		if (_Condition)                                                                                                \
+		LogError(FELIS_DEBUG_BREAK_INFO(Condition));                                                                   \
+		FELIS_DEBUG_BREAK();                                                                                           \
+	} while (false)
+
+#define ReturnIf(Condition, ...)                                                                                       \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		if (Condition)                                                                                                 \
 		{                                                                                                              \
-			Assert(_Condition);                                                                                        \
 			return __VA_ARGS__;                                                                                        \
 		}                                                                                                              \
 	} while (false)
 
-#define AssertBreakIf(_Condition)                                                                                      \
+#define BreakIf(Condition)                                                                                             \
+	if (Condition)                                                                                                     \
+	break
+
+#define ContinueIf(Condition)                                                                                          \
+	if (Condition)                                                                                                     \
+	continue
+
+#define AssertReturnIf(Condition, ...)                                                                                 \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		if (_Condition)                                                                                                \
+		if (Condition)                                                                                                 \
 		{                                                                                                              \
-			Assert(_Condition);                                                                                        \
-			break;                                                                                                     \
+			Assert(Condition);                                                                                         \
+			return __VA_ARGS__;                                                                                        \
 		}                                                                                                              \
 	} while (false)
 
-#define AssertContinueIf(_Condition)                                                                                   \
+#define AssertBreakIf(Condition)                                                                                       \
+	if (Condition)                                                                                                     \
+	{                                                                                                                  \
+		Assert(Condition);                                                                                             \
+		break;                                                                                                         \
+	}                                                                                                                  \
+	else                                                                                                               \
+		void(0)
+
+#define AssertContinueIf(Condition)                                                                                    \
+	if (Condition)                                                                                                     \
+	{                                                                                                                  \
+		Assert(Condition);                                                                                             \
+		continue;                                                                                                      \
+	}                                                                                                                  \
+	else                                                                                                               \
+		void(0)
+
+#define SafeDelete(Pointer)                                                                                            \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		if (_Condition)                                                                                                \
+		if (Pointer)                                                                                                   \
 		{                                                                                                              \
-			Assert(_Condition);                                                                                        \
-			continue;                                                                                                  \
+			delete Pointer;                                                                                            \
+			Pointer = nullptr;                                                                                         \
 		}                                                                                                              \
 	} while (false)
 
-#define SafeDelete(_Pointer)                                                                                           \
+#define SafeDeleteArray(Pointer)                                                                                       \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		if (_Pointer)                                                                                                  \
+		if (Pointer)                                                                                                   \
 		{                                                                                                              \
-			delete _Pointer;                                                                                           \
-			_Pointer = nullptr;                                                                                        \
+			delete[] Pointer;                                                                                          \
+			Pointer = nullptr;                                                                                         \
 		}                                                                                                              \
 	} while (false)
 
-#define SafeDeleteArray(_Pointer)                                                                                      \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		if (_Pointer)                                                                                                  \
-		{                                                                                                              \
-			delete[] _Pointer;                                                                                         \
-			_Pointer = nullptr;                                                                                        \
-		}                                                                                                              \
-	} while (false)
+#define FELIS_DISABLE_COPY(ClassName)                                                                                  \
+	ClassName(const ClassName&)			   = delete;                                                                   \
+	ClassName& operator=(const ClassName&) = delete
 
-#define DISABLE_COPY(Class)                                                                                            \
-	Class(const Class&)			   = delete;                                                                           \
-	Class& operator=(const Class&) = delete
+#define FELIS_DISABLE_MOVE(ClassName)                                                                                  \
+	ClassName(ClassName&&)			  = delete;                                                                        \
+	ClassName& operator=(ClassName&&) = delete
 
-#define DISABLE_MOVE(Class)                                                                                            \
-	Class(Class&&)			  = delete;                                                                                \
-	Class& operator=(Class&&) = delete
+#define FELIS_DEFAULT_COPY(ClassName)                                                                                  \
+	ClassName(const ClassName&)			   = default;                                                                  \
+	ClassName& operator=(const ClassName&) = default
 
-#define DEFAULT_COPY(Class)                                                                                            \
-	Class(const Class&)			   = default;                                                                          \
-	Class& operator=(const Class&) = default
+#define FELIS_DEFAULT_MOVE(ClassName)                                                                                  \
+	ClassName(ClassName&&)			  = default;                                                                       \
+	ClassName& operator=(ClassName&&) = default
 
-#define DEFAULT_MOVE(Class)                                                                                            \
-	Class(Class&&)			  = default;                                                                               \
-	Class& operator=(Class&&) = default
+#define FELIS_DISABLE_COPY_AND_MOVE(ClassName)                                                                         \
+	FELIS_DISABLE_COPY(ClassName);                                                                                     \
+	FELIS_DISABLE_MOVE(ClassName)
 
-#define DISABLE_COPY_AND_MOVE(Class)                                                                                   \
-	DISABLE_COPY(Class);                                                                                               \
-	DISABLE_MOVE(Class)
+#define FELIS_DEFAULT_COPY_AND_MOVE(ClassName)                                                                         \
+	FELIS_DEFAULT_COPY(ClassName);                                                                                     \
+	FELIS_DEFAULT_MOVE(ClassName)
 
-#define DEFAULT_COPY_AND_MOVE(Class)                                                                                   \
-	DEFAULT_COPY(Class);                                                                                               \
-	DEFAULT_MOVE(Class)
-
-#define CREATE_STRONG_TYPE(_Name, _Type, _DefaultValue, _InvalidValue)                                                 \
-	class _Name                                                                                                        \
+#define FELIS_CREATE_STRONG_TYPE(Name, Type, DefaultValue, InvalidValue)                                               \
+	class Name                                                                                                         \
 	{                                                                                                                  \
 	public:                                                                                                            \
-		_Name()	 = default;                                                                                            \
-		~_Name() = default;                                                                                            \
-		_Name(_Type initialValue)                                                                                      \
+		Name()	= default;                                                                                             \
+		~Name() = default;                                                                                             \
+		Name(Type initialValue)                                                                                        \
 			: value(initialValue) {};                                                                                  \
                                                                                                                        \
-		bool operator==(const _Name& other) const                                                                      \
+		bool operator==(const Name& other) const                                                                       \
 		{                                                                                                              \
 			return value == other.value;                                                                               \
 		}                                                                                                              \
-		bool operator!=(const _Name& other) const                                                                      \
+		bool operator!=(const Name& other) const                                                                       \
 		{                                                                                                              \
 			return value != other.value;                                                                               \
 		}                                                                                                              \
                                                                                                                        \
 		bool IsValid() const                                                                                           \
 		{                                                                                                              \
-			return value != _Name::Invalid;                                                                            \
+			return value != Name::Invalid;                                                                             \
 		}                                                                                                              \
                                                                                                                        \
-		inline static _Type Default = _DefaultValue;                                                                   \
-		inline static _Type Invalid = _InvalidValue;                                                                   \
+		inline static Type Default = DefaultValue;                                                                     \
+		inline static Type Invalid = InvalidValue;                                                                     \
                                                                                                                        \
 	public:                                                                                                            \
-		_Type value = _DefaultValue;                                                                                   \
+		Type value = DefaultValue;                                                                                     \
 	};

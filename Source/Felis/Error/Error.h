@@ -8,7 +8,7 @@
 // that holds additional error data like error texts and others respectively, or else - a linker error
 //
 // Check FelisError.h and FelisError.cpp for reference
-template <CppEnum T>
+template <ErrorCodeEnum T>
 class Error
 {
 public:
@@ -37,61 +37,61 @@ private:
 	static const ErrorRegistry<T> s_Registry;
 };
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 Error<T>::Error(T errorCode)
 	: m_ErrorCode(errorCode)
 {
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 inline Error<T>::operator int() const
 {
 	return GetErrorCodeInt();
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 inline Error<T>::operator bool() const
 {
 	return HasError();
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 T Error<T>::GetErrorCode() const
 {
 	return m_ErrorCode;
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 int Error<T>::GetErrorCodeInt() const
 {
 	return (int)m_ErrorCode;
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 DateTime Error<T>::GetTimestamp() const
 {
 	return m_Timestamp;
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 const ErrorData& Error<T>::GetErrorData() const
 {
 	return s_Registry.GetErrorData(m_ErrorCode);
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 inline bool Error<T>::HasError() const
 {
 	return m_ErrorCode != T(0);
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 inline const char* Error<T>::GetType() const
 {
 	return s_Type;
 }
 
-template <CppEnum T>
+template <ErrorCodeEnum T>
 inline std::ostream& operator<<(std::ostream& os, const Error<T>& error)
 {
 	return os << error.GetType() << ": code " << error.GetErrorCodeInt()
