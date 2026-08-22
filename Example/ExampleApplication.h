@@ -25,7 +25,8 @@ private:
 
 private:
 	std::string m_InputPath;
-	ECountMode	m_CountMode = ECountMode::Lines;
-	bool		m_ShowHelp	= false;
-	bool		m_Verbose	= false;
+	ECountMode	m_CountMode				= ECountMode::Lines;
+	bool		m_ShowHelp				= false;
+	bool		m_Verbose				= false;
+	bool		m_HasFileLogDestination = false;
 };

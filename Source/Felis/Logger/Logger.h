@@ -44,19 +44,21 @@ public:
 	bool			   IsLogLevelEnabled(ELogLevel level) const;
 	LogFlags		   GetLogFlags() const;
 
-	void AddLogDestination(LogDestination&& destination);
-	void RemoveLogDestination(ELogDestinationType type);
+	void					AddLogDestination(LogDestination&& destination);
+	void					RemoveLogDestination(ELogDestinationType type);
+	bool					SetLogDestinationFlags(ELogDestinationType type, LogFlags flags);
+	std::optional<LogFlags> GetLogDestinationFlags(ELogDestinationType type) const;
 
-	void Flush();
+	bool Flush();
 
 	template <typename... Args>
-	inline void Log(ELogLevel level, Args&&... args);
+	inline bool Log(ELogLevel level, Args&&... args);
 
 	template <typename... Args>
-	inline void LogFmt(ELogLevel level, std::format_string<Args...> fmt, Args&&... args);
+	inline bool LogFmt(ELogLevel level, std::format_string<Args...> fmt, Args&&... args);
 
 private:
-	void Log(const LogEntry& log);
+	bool Log(const LogEntry& log);
 
 private:
 	bool			m_IsEnabled = true;
@@ -67,29 +69,30 @@ private:
 };
 
 template <typename... Args>
-inline void Logger::Log(ELogLevel level, Args&&... args)
+inline bool Logger::Log(ELogLevel level, Args&&... args)
 {
-	ReturnIf(!IsLogLevelEnabled(level));
+	ReturnIf(!IsLogLevelEnabled(level), true);
 
 	std::stringstream ss;
 	(ss << ... << args);
 
-	Log({m_Flags, DateTime::Now(), level, m_Prefix, ss.str()});
+	return Log({m_Flags, DateTime::Now(), level, m_Prefix, ss.str()});
 }
 
 template <typename... Args>
-inline void Logger::LogFmt(ELogLevel level, std::format_string<Args...> fmt, Args&&... args)
+inline bool Logger::LogFmt(ELogLevel level, std::format_string<Args...> fmt, Args&&... args)
 {
-	ReturnIf(!IsLogLevelEnabled(level));
+	ReturnIf(!IsLogLevelEnabled(level), true);
 
-	Log({m_Flags, DateTime::Now(), level, m_Prefix, std::format(fmt, std::forward<Args>(args)...)});
+	return Log({m_Flags, DateTime::Now(), level, m_Prefix, std::format(fmt, std::forward<Args>(args)...)});
 }
 } // namespace Felis
 
-#define FELIS_LOG_CONSOLE(Level, ...) ::Felis::Logger::GetGlobalLogger().Log(Level, __VA_ARGS__)
+#define FELIS_LOG_GLOBAL(Level, ...) ::Felis::Logger::GetGlobalLogger().Log(Level, __VA_ARGS__)
+#define FELIS_LOG_CONSOLE(Level, ...) FELIS_LOG_GLOBAL(Level, __VA_ARGS__)
 
-#define LogCritical(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Critical, __VA_ARGS__)
-#define LogError(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Error, __VA_ARGS__)
-#define LogWarning(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Warning, __VA_ARGS__)
-#define LogInfo(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Info, __VA_ARGS__)
-#define LogDebug(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Debug, __VA_ARGS__)
+#define LogCritical(...) FELIS_LOG_GLOBAL(::Felis::ELogLevel::Critical, __VA_ARGS__)
+#define LogError(...) FELIS_LOG_GLOBAL(::Felis::ELogLevel::Error, __VA_ARGS__)
+#define LogWarning(...) FELIS_LOG_GLOBAL(::Felis::ELogLevel::Warning, __VA_ARGS__)
+#define LogInfo(...) FELIS_LOG_GLOBAL(::Felis::ELogLevel::Info, __VA_ARGS__)
+#define LogDebug(...) FELIS_LOG_GLOBAL(::Felis::ELogLevel::Debug, __VA_ARGS__)

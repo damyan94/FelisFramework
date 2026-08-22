@@ -11,7 +11,8 @@ struct LogFlags
 		Time   = 1 << 1,
 		Level  = 1 << 2,
 		Prefix = 1 << 3,
-		All	   = Color | Time | Level | Prefix
+		Plain  = Time | Level | Prefix,
+		All	   = Color | Plain
 	};
 
 	LogFlags& SetFlag(uint8_t type, bool value);
@@ -20,6 +21,8 @@ struct LogFlags
 
 	uint8_t Flags = 0;
 };
+
+LogFlags operator&(LogFlags left, LogFlags right);
 
 // A log message
 struct LogEntry

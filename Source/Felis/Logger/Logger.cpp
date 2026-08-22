@@ -2,12 +2,11 @@
 
 #include "Felis/Logger/Logger.h"
 
-#include "Felis/Logger/Formatters/LogFormatterConsole.h"
+#include "Felis/Logger/Formatters/LogFormatterText.h"
 #include "Felis/Logger/Writers/LogWriterConsole.h"
 
 namespace Felis
 {
-
 static Logger CreateGlobalLogger()
 {
 	Logger logger;
@@ -15,7 +14,7 @@ static Logger CreateGlobalLogger()
 	logger.SetLogLevel(ELogLevel::Debug);
 	logger.SetLogFlags(LogFlags::All);
 	logger.AddLogDestination(
-		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterConsole>()});
+		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterText>()});
 
 	return logger;
 }
@@ -90,20 +89,58 @@ void Logger::RemoveLogDestination(ELogDestinationType type)
 	std::erase_if(m_Destinations, [type](const LogDestination& destination) { return destination.Type == type; });
 }
 
-void Logger::Flush()
+bool Logger::SetLogDestinationFlags(ELogDestinationType type, LogFlags flags)
 {
-	for (auto& dest : m_Destinations)
+	for (auto& destination : m_Destinations)
 	{
-		dest.Writer->Flush();
+		if (destination.Type == type)
+		{
+			destination.Formatter->SetLogFlags(flags);
+			return true;
+		}
 	}
+
+	return false;
 }
 
-void Logger::Log(const LogEntry& log)
+std::optional<LogFlags> Logger::GetLogDestinationFlags(ELogDestinationType type) const
 {
-	for (auto& dest : m_Destinations)
+	for (const auto& destination : m_Destinations)
 	{
-		dest.Writer->Write(log, *dest.Formatter);
+		if (destination.Type == type)
+		{
+			return destination.Formatter->GetLogFlags();
+		}
 	}
+
+	return std::nullopt;
 }
 
+bool Logger::Flush()
+{
+	bool success = true;
+	for (auto& destination : m_Destinations)
+	{
+		if (!destination.Writer->Flush())
+		{
+			success = false;
+		}
+	}
+
+	return success;
+}
+
+bool Logger::Log(const LogEntry& log)
+{
+	bool success = true;
+	for (auto& destination : m_Destinations)
+	{
+		if (!destination.Writer->Write(log, *destination.Formatter))
+		{
+			success = false;
+		}
+	}
+
+	return success;
+}
 } // namespace Felis

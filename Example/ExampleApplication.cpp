@@ -2,6 +2,9 @@
 
 #include "ExampleApplication.h"
 
+#include "Felis/Logger/Formatters/LogFormatterText.h"
+#include "Felis/Logger/Writers/LogWriterFile.h"
+
 ExampleApplication::ExampleApplication(int argC, char** argV)
 	: Felis::Application(argC, argV)
 {
@@ -15,6 +18,7 @@ Felis::ApplicationError ExampleApplication::OnInit()
 
 	args.EnableArgumentValidation(true);
 	args.AddAllowedArgument("help");
+	args.AddAllowedArgument("log-file");
 	args.AddAllowedArgument("mode");
 	args.AddAllowedArgument("verbose");
 
@@ -82,6 +86,31 @@ Felis::ApplicationError ExampleApplication::OnInit()
 	else
 	{
 		Felis::Logger::GetGlobalLogger().SetLogLevel(Felis::ELogLevel::Error);
+	}
+
+	if (args.HasArgument("log-file"))
+	{
+		std::string logFilePath;
+		error = args.GetOrDefault("log-file", logFilePath, std::string{});
+		if (error || logFilePath.empty())
+		{
+			LogError("--log-file requires a non-empty file path.");
+			return Felis::EApplicationErrorCode::InvalidCommandLineArguments;
+		}
+
+		auto	   logWriter = std::make_unique<Felis::LogWriterFile>(logFilePath);
+		const auto fileError = logWriter->Open();
+		if (fileError)
+		{
+			LogError("Failed to open log file '", logFilePath, "': ", fileError);
+			return Felis::EApplicationErrorCode::RuntimeFailed;
+		}
+
+		Felis::Logger::GetGlobalLogger().AddLogDestination(
+			{Felis::ELogDestinationType::LOG,
+			 std::move(logWriter),
+			 std::make_unique<Felis::LogFormatterText>(Felis::LogFlags{Felis::LogFlags::Plain})});
+		m_HasFileLogDestination = true;
 	}
 
 	return Felis::EApplicationErrorCode::Success;
@@ -171,20 +200,34 @@ void ExampleApplication::PrintUsage() const
 	const auto& programName = GetCommandLineArguments().GetProgramName();
 
 	std::cout << "Usage: " << (programName.empty() ? "FelisExample" : programName)
-			  << " [--mode=lines|words|bytes] [--verbose] <file>\n"
+			  << " [--mode=lines|words|bytes] [--verbose] [--log-file=FILE] <file>\n"
 			  << "\n"
 			  << "Count lines, words or bytes in a text file.\n"
 			  << "\n"
 			  << "Options:\n"
 			  << "  --mode=MODE  Select lines, words or bytes. Default: lines.\n"
 			  << "  --verbose    Enable informational logging.\n"
+			  << "  --log-file=FILE  Append plain-text logs to FILE.\n"
 			  << "  --help       Show this help text.\n"
 			  << "  --           Stop parsing named arguments.\n";
 }
 
 Felis::ApplicationError ExampleApplication::OnDeinit()
 {
-	Felis::Logger::GetGlobalLogger().Flush();
+	auto&	   logger  = Felis::Logger::GetGlobalLogger();
+	const bool flushed = logger.Flush();
+
+	if (m_HasFileLogDestination)
+	{
+		logger.RemoveLogDestination(Felis::ELogDestinationType::LOG);
+		m_HasFileLogDestination = false;
+	}
+
+	if (!flushed)
+	{
+		LogError("Failed to flush one or more log destinations.");
+		return Felis::EApplicationErrorCode::RuntimeFailed;
+	}
 
 	return Felis::EApplicationErrorCode::Success;
 }

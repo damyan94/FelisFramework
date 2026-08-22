@@ -3,6 +3,7 @@
 #include <cctype>
 #include <cmath>
 #include <cstdarg>
+#include <cstddef>
 #include <cstdint>
 
 #include <array>
@@ -18,6 +19,7 @@
 #include <vector>
 
 #include <algorithm>
+#include <atomic>
 #include <charconv>
 #include <chrono>
 #include <concepts>
@@ -27,11 +29,13 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <optional>
 #include <shared_mutex>
 #include <source_location>
+#include <span>
 #include <system_error>
 #include <thread>
 #include <type_traits>

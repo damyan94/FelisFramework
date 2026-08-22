@@ -4,15 +4,16 @@
 
 namespace Felis
 {
-// Formats a line to be printed on the console in the format
+// Formats a text line in the form
 // <COLOR> [TIMESTAMP] [LEVEL] [PREFIX] MESSAGE <DEFAULT_COLOR>
-class LogFormatterConsole final : public ILogFormatter
+// according to the flags enabled by both the log entry and this formatter
+class LogFormatterText final : public ILogFormatter
 {
 public:
-	LogFormatterConsole()  = default;
-	~LogFormatterConsole() = default;
+	explicit LogFormatterText(LogFlags flags = LogFlags{LogFlags::All});
+	~LogFormatterText() = default;
 
-	std::string Format(const LogEntry& log) const;
+	std::string Format(const LogEntry& log) const override;
 
 private:
 	void FormatTime(const DateTime& time, std::stringstream& stream) const;

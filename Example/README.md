@@ -21,7 +21,7 @@ Example/FelisExample
 ## Usage
 
 ```text
-FelisExample [--mode=lines|words|bytes] [--verbose] <file>
+FelisExample [--mode=lines|words|bytes] [--verbose] [--log-file=<file>] <file>
 ```
 
 Options:
@@ -30,6 +30,7 @@ Options:
 - `--mode=words` counts whitespace-separated words;
 - `--mode=bytes` counts bytes read from the file;
 - `--verbose` enables informational logging;
+- `--log-file=FILE` appends plain-text logs to `FILE`;
 - `--help` prints usage information;
 - `--` stops named-argument parsing.
 
@@ -38,6 +39,7 @@ Examples:
 ```bash
 Build/Linux/Debug/Example/FelisExample --mode=lines README.md
 Build/Linux/Debug/Example/FelisExample --mode=words --verbose README.md
+Build/Linux/Debug/Example/FelisExample --mode=words --verbose --log-file=FelisExample.log README.md
 Build/Linux/Debug/Example/FelisExample --help
 ```
 

@@ -11,7 +11,7 @@ public:
 	LogWriterConsole()	= default;
 	~LogWriterConsole() = default;
 
-	void Write(const LogEntry& log, const class ILogFormatter& formatter);
-	void Flush();
+	bool Write(const LogEntry& log, const class ILogFormatter& formatter) override;
+	bool Flush() override;
 };
 } // namespace Felis

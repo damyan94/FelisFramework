@@ -2,7 +2,7 @@
 
 #include "Logger/LoggerTest.h"
 
-#include "Felis/Logger/Formatters/LogFormatterConsole.h"
+#include "Felis/Logger/Formatters/LogFormatterText.h"
 #include "Felis/Logger/Logger.h"
 #include "Felis/Logger/Writers/LogWriterConsole.h"
 
@@ -19,17 +19,19 @@ using namespace Felis;
 class LogWriterMemory final : public ILogWriter
 {
 public:
-	void Write(const LogEntry& log, const ILogFormatter& formatter) override
+	bool Write(const LogEntry& log, const ILogFormatter& formatter) override
 	{
 		std::lock_guard<std::mutex> lock(m_Mutex);
 		m_Entries.push_back(log);
 		m_FormattedLines.push_back(formatter.Format(log));
+		return true;
 	}
 
-	void Flush() override
+	bool Flush() override
 	{
 		std::lock_guard<std::mutex> lock(m_Mutex);
 		++m_FlushCount;
+		return true;
 	}
 
 	const std::vector<LogEntry>& GetEntries() const
@@ -64,9 +66,10 @@ public:
 	{
 	}
 
-	void Write(const LogEntry&, const ILogFormatter&) override
+	bool Write(const LogEntry&, const ILogFormatter&) override
 	{
 		++m_Writes;
+		return true;
 	}
 
 private:
@@ -74,7 +77,7 @@ private:
 };
 
 // Builds a Logger wired to a fresh LogWriterMemory + the real
-// LogFormatterConsole, and hands back a non-owning pointer to the
+// LogFormatterText, and hands back a non-owning pointer to the
 // writer so tests can inspect what was captured.
 Logger MakeMemoryLogger(LogWriterMemory*& outWriter, const std::string& prefix = "", ELogLevel level = ELogLevel::Debug)
 {
@@ -86,8 +89,7 @@ Logger MakeMemoryLogger(LogWriterMemory*& outWriter, const std::string& prefix =
 	auto writer = std::make_unique<LogWriterMemory>();
 	outWriter	= writer.get();
 
-	logger.AddLogDestination(
-		{ELogDestinationType::Console, std::move(writer), std::make_unique<LogFormatterConsole>()});
+	logger.AddLogDestination({ELogDestinationType::Console, std::move(writer), std::make_unique<LogFormatterText>()});
 
 	return logger;
 }
@@ -149,7 +151,7 @@ namespace Test
 namespace
 {
 
-// LogFormatterConsole - pure unit tests, no Logger/writer involved.
+// LogFormatterText - pure unit tests, no Logger/writer involved.
 // Each case isolates a single flag to lock down the exact contract
 // of "<COLOR> [TIME] [LEVEL] [PREFIX] MESSAGE <RESET>".
 
@@ -158,7 +160,7 @@ void TestFormatter_ExactColorCodePerLevel(TestReporter& r)
 	struct LevelColor
 	{
 		ELogLevel	level;
-		const char* code; // matches the Set() calls in LogFormatterConsole::Format
+		const char* code; // matches the Set() calls in LogFormatterText::Format
 	};
 
 	const LevelColor cases[] = {
@@ -169,7 +171,7 @@ void TestFormatter_ExactColorCodePerLevel(TestReporter& r)
 		{ELogLevel::Debug, "36;1"},	   // CyanFg + Bold
 	};
 
-	LogFormatterConsole formatter;
+	LogFormatterText formatter;
 
 	for (const auto& c : cases)
 	{
@@ -186,7 +188,7 @@ void TestFormatter_ExactColorCodePerLevel(TestReporter& r)
 
 void TestFormatter_ColorOffProducesNoEscapeCodes(TestReporter& r)
 {
-	LogFormatterConsole formatter;
+	LogFormatterText formatter;
 
 	LogFlags flags;
 	flags.Flags = LogFlags::All;
@@ -200,7 +202,7 @@ void TestFormatter_ColorOffProducesNoEscapeCodes(TestReporter& r)
 
 void TestFormatter_TimeOnlyMatchesExpectedShape(TestReporter& r)
 {
-	LogFormatterConsole formatter;
+	LogFormatterText formatter;
 
 	LogFlags flags;
 	flags.Flags = LogFlags::Time;
@@ -215,7 +217,7 @@ void TestFormatter_TimeOnlyMatchesExpectedShape(TestReporter& r)
 
 void TestFormatter_LevelOnlyProducesExpectedTag(TestReporter& r)
 {
-	LogFormatterConsole formatter;
+	LogFormatterText formatter;
 
 	struct LevelTag
 	{
@@ -246,7 +248,7 @@ void TestFormatter_LevelOnlyProducesExpectedTag(TestReporter& r)
 
 void TestFormatter_PrefixOnlyIncludedWhenNonEmpty(TestReporter& r)
 {
-	LogFormatterConsole formatter;
+	LogFormatterText formatter;
 
 	LogFlags flags;
 	flags.Flags = LogFlags::Prefix;
@@ -260,7 +262,7 @@ void TestFormatter_PrefixOnlyIncludedWhenNonEmpty(TestReporter& r)
 
 void TestFormatter_NoFlagsProducesBareMessage(TestReporter& r)
 {
-	LogFormatterConsole formatter;
+	LogFormatterText formatter;
 
 	LogFlags flags;
 	flags.ClearFlags();
@@ -271,7 +273,7 @@ void TestFormatter_NoFlagsProducesBareMessage(TestReporter& r)
 
 void TestFormatter_AllFlagsComposeInOrder(TestReporter& r)
 {
-	LogFormatterConsole formatter;
+	LogFormatterText formatter;
 
 	LogFlags flags;
 	flags.Flags = LogFlags::All;
@@ -279,7 +281,7 @@ void TestFormatter_AllFlagsComposeInOrder(TestReporter& r)
 	const LogEntry	  entry{flags, DateTime::Now(), ELogLevel::Error, "Net", "connection lost"};
 	const std::string result = formatter.Format(entry);
 
-	// Order per LogFormatterConsole::Format: color, time, level, prefix, message, then reset.
+	// Order per LogFormatterText::Format: color, time, level, prefix, message, then reset.
 	static const std::regex pattern(
 		R"(^\x1B\[31;1m\[\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}\.\d{6}\] \[ERR\] \[Net\] connection lost\n\x1B\[0m$)");
 	TEST_CHECK(r, std::regex_match(result, pattern));
@@ -289,8 +291,8 @@ void TestFormatter_AllFlagsComposeInOrder(TestReporter& r)
 
 void TestWriter_RoutesAboveWarningToCoutAtOrBelowToCerr(TestReporter& r)
 {
-	LogWriterConsole	writer;
-	LogFormatterConsole formatter;
+	LogWriterConsole writer;
+	LogFormatterText formatter;
 
 	LogFlags flags;
 	flags.Flags = LogFlags::All;
@@ -519,7 +521,7 @@ void TestDestinationManagement(TestReporter& r)
 
 	logger.AddLogDestination({ELogDestinationType::Console,
 							  std::make_unique<LogWriterCounter>(writerAWrites),
-							  std::make_unique<LogFormatterConsole>()});
+							  std::make_unique<LogFormatterText>()});
 
 	logger.Log(ELogLevel::Info, "msg1");
 	TEST_CHECK(r, writerAWrites == 1);
@@ -530,7 +532,7 @@ void TestDestinationManagement(TestReporter& r)
 
 	logger.AddLogDestination({ELogDestinationType::Console,
 							  std::make_unique<LogWriterCounter>(writerBWrites),
-							  std::make_unique<LogFormatterConsole>()});
+							  std::make_unique<LogFormatterText>()});
 
 	logger.Log(ELogLevel::Info, "msg3");
 	TEST_CHECK(r, writerBWrites == 1);
@@ -539,7 +541,7 @@ void TestDestinationManagement(TestReporter& r)
 	// adding another destination of the same type should replace writerB, not add a second one
 	logger.AddLogDestination({ELogDestinationType::Console,
 							  std::make_unique<LogWriterCounter>(writerCWrites),
-							  std::make_unique<LogFormatterConsole>()});
+							  std::make_unique<LogFormatterText>()});
 
 	logger.Log(ELogLevel::Info, "msg4");
 	TEST_CHECK(r, writerCWrites == 1);
@@ -659,7 +661,7 @@ void TestGlobalLoggerMacros(TestReporter& r)
 	auto			 writerOwned = std::make_unique<LogWriterMemory>();
 	LogWriterMemory* writer		 = writerOwned.get();
 	gLogger.AddLogDestination(
-		{ELogDestinationType::Console, std::move(writerOwned), std::make_unique<LogFormatterConsole>()});
+		{ELogDestinationType::Console, std::move(writerOwned), std::make_unique<LogFormatterText>()});
 
 	LogCritical("macro Critical");
 	LogError("macro Error");
@@ -675,7 +677,7 @@ void TestGlobalLoggerMacros(TestReporter& r)
 
 	// restore the global logger's real console destination and prior settings
 	gLogger.AddLogDestination(
-		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterConsole>()});
+		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterText>()});
 	gLogger.SetLogLevel(prevLevel);
 	gLogger.SetLogFlags(prevFlags);
 }
@@ -691,7 +693,7 @@ void PrintVisualSample()
 	logger.SetLogLevel(ELogLevel::Debug);
 	logger.SetLogFlags(LogFlags::All);
 	logger.AddLogDestination(
-		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterConsole>()});
+		{ELogDestinationType::Console, std::make_unique<LogWriterConsole>(), std::make_unique<LogFormatterText>()});
 
 	logger.Log(ELogLevel::Debug, "");
 	LogAllLevels(logger);

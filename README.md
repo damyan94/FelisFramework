@@ -9,7 +9,8 @@ all kinds of C++ applications - CLI tools, UI applications, games and others.
 - named and positional command-line argument parsing;
 - safe, non-throwing typed argument conversion;
 - enum-based recoverable errors;
-- configurable console logging;
+- whole-file text and binary I/O;
+- configurable console and file logging;
 - time and duration utilities;
 - main-thread timer management with generation-based handles.
 

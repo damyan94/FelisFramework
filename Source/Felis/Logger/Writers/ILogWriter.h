@@ -12,8 +12,8 @@ public:
 	ILogWriter()		  = default;
 	virtual ~ILogWriter() = default;
 
-	virtual void		Write(const LogEntry& log, const class ILogFormatter& formatter) = 0;
-	virtual inline void Flush() {};
+	virtual bool Write(const LogEntry& log, const class ILogFormatter& formatter) = 0;
+	virtual bool Flush();
 };
 
 using ILogWriterPtr = std::unique_ptr<ILogWriter>;

@@ -4,7 +4,6 @@
 
 namespace Felis
 {
-
 LogFlags& LogFlags::SetFlag(uint8_t flag, bool value)
 {
 	Flags = (value) ? (Flags | flag) : (Flags & ~flag);
@@ -21,4 +20,8 @@ bool LogFlags::IsFlagSet(uint8_t flag) const
 	return Flags & flag;
 }
 
+LogFlags operator&(LogFlags left, LogFlags right)
+{
+	return {static_cast<uint8_t>(left.Flags & right.Flags)};
+}
 } // namespace Felis

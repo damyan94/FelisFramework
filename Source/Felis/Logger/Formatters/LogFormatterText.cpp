@@ -1,17 +1,22 @@
 #include "Felis/stdafx.h"
 
-#include "Felis/Logger/Formatters/LogFormatterConsole.h"
+#include "Felis/Logger/Formatters/LogFormatterText.h"
 
 #include "Felis/Logger/ConsoleFormat.h"
 
 namespace Felis
 {
+LogFormatterText::LogFormatterText(LogFlags flags)
+	: ILogFormatter(flags)
+{
+}
 
-std::string LogFormatterConsole::Format(const LogEntry& log) const
+std::string LogFormatterText::Format(const LogEntry& log) const
 {
 	std::stringstream ss;
+	const LogFlags	  flags = GetEffectiveLogFlags(log);
 
-	const bool coloredOutput = log.Flags.IsFlagSet(LogFlags::Color);
+	const bool coloredOutput = flags.IsFlagSet(LogFlags::Color);
 	if (coloredOutput)
 	{
 		switch (log.Level)
@@ -25,17 +30,17 @@ std::string LogFormatterConsole::Format(const LogEntry& log) const
 		}
 	}
 
-	if (log.Flags.IsFlagSet(LogFlags::Time))
+	if (flags.IsFlagSet(LogFlags::Time))
 	{
 		FormatTime(log.Time, ss);
 	}
 
-	if (log.Flags.IsFlagSet(LogFlags::Level))
+	if (flags.IsFlagSet(LogFlags::Level))
 	{
 		FormatLevel(log.Level, ss);
 	}
 
-	if (log.Flags.IsFlagSet(LogFlags::Prefix))
+	if (flags.IsFlagSet(LogFlags::Prefix))
 	{
 		FormatPrefix(log.Prefix, ss);
 	}
@@ -50,12 +55,12 @@ std::string LogFormatterConsole::Format(const LogEntry& log) const
 	return ss.str();
 }
 
-void LogFormatterConsole::FormatTime(const DateTime& time, std::stringstream& stream) const
+void LogFormatterText::FormatTime(const DateTime& time, std::stringstream& stream) const
 {
 	stream << '[' << time << "] ";
 }
 
-void LogFormatterConsole::FormatLevel(ELogLevel level, std::stringstream& stream) const
+void LogFormatterText::FormatLevel(ELogLevel level, std::stringstream& stream) const
 {
 	std::string_view levelStringView;
 	switch (level)
@@ -71,7 +76,7 @@ void LogFormatterConsole::FormatLevel(ELogLevel level, std::stringstream& stream
 	stream << '[' << levelStringView << "] ";
 }
 
-void LogFormatterConsole::FormatPrefix(const std::string& prefix, std::stringstream& stream) const
+void LogFormatterText::FormatPrefix(const std::string& prefix, std::stringstream& stream) const
 {
 	if (!prefix.empty())
 	{
@@ -79,9 +84,8 @@ void LogFormatterConsole::FormatPrefix(const std::string& prefix, std::stringstr
 	}
 }
 
-void LogFormatterConsole::FormatMessage(const std::string& message, std::stringstream& stream) const
+void LogFormatterText::FormatMessage(const std::string& message, std::stringstream& stream) const
 {
 	stream << message << '\n';
 }
-
 } // namespace Felis
