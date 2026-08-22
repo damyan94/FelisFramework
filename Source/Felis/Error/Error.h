@@ -2,6 +2,8 @@
 
 #include "Felis/Error/ErrorRegistry.h"
 
+namespace Felis
+{
 // A generic error class that can accept custom error codes via a template enum class
 //
 // The user needs to instantiate the static s_Type and s_Registry with a string and std::array
@@ -97,3 +99,4 @@ inline std::ostream& operator<<(std::ostream& os, const Error<T>& error)
 	return os << error.GetType() << ": code " << error.GetErrorCodeInt()
 			  << "; description: " << error.GetErrorData().Text;
 }
+} // namespace Felis

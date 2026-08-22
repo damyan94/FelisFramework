@@ -3,7 +3,7 @@
 #include "Felis/Application/Application.h"
 
 // A small text-statistics command-line application
-class ExampleApplication final : public Application
+class ExampleApplication final : public Felis::Application
 {
 public:
 	ExampleApplication(int argC, char** argV);
@@ -17,9 +17,9 @@ private:
 		Bytes
 	};
 
-	ApplicationError OnInit() override;
-	ApplicationError OnRun() override;
-	ApplicationError OnDeinit() override;
+	Felis::ApplicationError OnInit() override;
+	Felis::ApplicationError OnRun() override;
+	Felis::ApplicationError OnDeinit() override;
 
 	void PrintUsage() const;
 

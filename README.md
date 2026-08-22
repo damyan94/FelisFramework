@@ -5,7 +5,7 @@ all kinds of C++ applications - CLI tools, UI applications, games and others.
 
 ## Current features
 
-- `Application` with an `Init → Run → Deinit` lifecycle;
+- `Felis::Application` with an `Init → Run → Deinit` lifecycle;
 - named and positional command-line argument parsing;
 - safe, non-throwing typed argument conversion;
 - enum-based recoverable errors;
@@ -69,10 +69,19 @@ add_executable(MyApplication
 )
 
 target_precompile_headers(MyApplication PRIVATE Source/stdafx.h)
-target_link_libraries(MyApplication PRIVATE FelisFramework)
+target_link_libraries(MyApplication PRIVATE Felis::Framework)
 ```
 
-Applications derive from `Application` and implement `OnInit()`, `OnRun()` and
+The public C++ API is contained in the `Felis` namespace. A consuming project
+may introduce a project-local namespace alias without changing the underlying
+types or symbols:
+
+```cpp
+namespace Pantera = ::Felis;
+Pantera::Timer timer;
+```
+
+Applications derive from `Felis::Application` and implement `OnInit()`, `OnRun()` and
 `OnDeinit()`. Command-line arguments are available through
 `GetCommandLineArguments()`.
 

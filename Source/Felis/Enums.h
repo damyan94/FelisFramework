@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+namespace Felis
+{
 template <typename T>
 concept ErrorCodeEnum = std::is_enum_v<T> && requires {
 	{ T::Count } -> std::same_as<T>;
@@ -84,3 +86,4 @@ enum class ETimeStringFormat : uint8_t
 	Timestamp, //yyyymmddHHMMSS
 	Timepoint
 };
+} // namespace Felis

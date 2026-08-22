@@ -2,6 +2,8 @@
 
 #include "Felis/Application/CommandLineArgumentsError.h"
 
+namespace Felis
+{
 using AllowedArgumentsContainer	   = std::set<std::string>;
 using NonAllowedArgumentsContainer = std::set<std::string>;
 using ParsedArgumentsContainer	   = std::unordered_map<std::string, std::string>;
@@ -180,3 +182,4 @@ inline CommandLineArgumentError CommandLineArguments::ParseNumber(const std::str
 	outValue = parsedValue;
 	return ECommandLineArgumentErrorCode::Success;
 }
+} // namespace Felis

@@ -21,13 +21,13 @@ enum class ETestErrorCode : int32_t
 } // namespace
 
 template <>
-const char* Error<ETestErrorCode>::s_Type = "TestError";
+const char* Felis::Error<ETestErrorCode>::s_Type = "TestError";
 
 template <>
-const ErrorRegistry<ETestErrorCode> Error<ETestErrorCode>::s_Registry({
-	ErrorData{"Alpha"},
-	ErrorData{"Beta"},
-	ErrorData{"Gamma"},
+const Felis::ErrorRegistry<ETestErrorCode> Felis::Error<ETestErrorCode>::s_Registry({
+	Felis::ErrorData{"Alpha"},
+	Felis::ErrorData{"Beta"},
+	Felis::ErrorData{"Gamma"},
 });
 
 namespace Test

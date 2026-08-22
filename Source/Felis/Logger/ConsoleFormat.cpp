@@ -2,6 +2,9 @@
 
 #include "Felis/Logger/ConsoleFormat.h"
 
+namespace Felis
+{
+
 static const std::string s_StartSequence("\033[");
 static const std::string s_EndSequence("m");
 
@@ -81,3 +84,5 @@ std::ostream& operator<<(std::ostream& os, const ConsoleFormat& format)
 {
 	return os << format.m_String << s_EndSequence;
 }
+
+} // namespace Felis

@@ -2,6 +2,9 @@
 
 #include "Felis/Time/TimerManager.h"
 
+namespace Felis
+{
+
 TimerManager& TimerManager::Instance()
 {
 	static TimerManager timerManager;
@@ -245,3 +248,5 @@ void TimerManager::OnTimerTick(TimerData& timerData)
 
 	timerData.Elapsed = timerData.Elapsed.As<Duration::Nanoseconds>() % timerData.Interval.As<Duration::Nanoseconds>();
 }
+
+} // namespace Felis

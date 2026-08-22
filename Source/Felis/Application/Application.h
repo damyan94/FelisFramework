@@ -3,6 +3,8 @@
 #include "Felis/Application/ApplicationError.h"
 #include "Felis/Application/CommandLineArguments.h"
 
+namespace Felis
+{
 // Base class for an application
 // Initializes, runs and deinitializes the application
 class Application
@@ -29,3 +31,4 @@ private:
 private:
 	CommandLineArguments m_Args;
 };
+} // namespace Felis

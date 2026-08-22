@@ -4,6 +4,9 @@
 
 #include "Felis/Logger/ConsoleFormat.h"
 
+namespace Felis
+{
+
 std::string LogFormatterConsole::Format(const LogEntry& log) const
 {
 	std::stringstream ss;
@@ -80,3 +83,5 @@ void LogFormatterConsole::FormatMessage(const std::string& message, std::strings
 {
 	stream << message << '\n';
 }
+
+} // namespace Felis

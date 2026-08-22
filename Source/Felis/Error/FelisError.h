@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Felis
+{
 enum class EFelisErrorCode : int32_t
 {
 	Success = 0,
@@ -7,3 +9,4 @@ enum class EFelisErrorCode : int32_t
 	Generic,
 	Count
 };
+} // namespace Felis

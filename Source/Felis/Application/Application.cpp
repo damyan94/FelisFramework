@@ -2,6 +2,8 @@
 
 #include "Felis/Application/Application.h"
 
+namespace Felis
+{
 Application::Application(int argC, char** argV)
 	: m_Args(argC, argV)
 {
@@ -44,3 +46,4 @@ ApplicationError Application::Deinit()
 {
 	return OnDeinit();
 }
+} // namespace Felis

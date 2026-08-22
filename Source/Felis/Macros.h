@@ -64,7 +64,7 @@
 		break;                                                                                                         \
 	}                                                                                                                  \
 	else                                                                                                               \
-		void(0)
+		(void)0
 
 #define AssertContinueIf(Condition)                                                                                    \
 	if (Condition)                                                                                                     \
@@ -73,7 +73,7 @@
 		continue;                                                                                                      \
 	}                                                                                                                  \
 	else                                                                                                               \
-		void(0)
+		(void)0
 
 #define SafeDelete(Pointer)                                                                                            \
 	do                                                                                                                 \

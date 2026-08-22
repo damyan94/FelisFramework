@@ -2,6 +2,8 @@
 
 #include "Felis/Logger/Formatters/ILogFormatter.h"
 
+namespace Felis
+{
 // Formats a line to be printed on the console in the format
 // <COLOR> [TIMESTAMP] [LEVEL] [PREFIX] MESSAGE <DEFAULT_COLOR>
 class LogFormatterConsole final : public ILogFormatter
@@ -18,3 +20,4 @@ private:
 	void FormatPrefix(const std::string& prefix, std::stringstream& stream) const;
 	void FormatMessage(const std::string& message, std::stringstream& stream) const;
 };
+} // namespace Felis

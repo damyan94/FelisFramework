@@ -2,6 +2,8 @@
 
 #include "Felis/Application/ApplicationError.h"
 
+namespace Felis
+{
 template <>
 const char* Error<EApplicationErrorCode>::s_Type = "Application error";
 
@@ -13,3 +15,4 @@ const ErrorRegistry<EApplicationErrorCode> Error<EApplicationErrorCode>::s_Regis
 	ErrorData{"Application runtime failed"},
 	ErrorData{"Application deinitialization failed"},
 });
+} // namespace Felis

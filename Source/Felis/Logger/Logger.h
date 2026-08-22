@@ -5,6 +5,8 @@
 #include "Felis/Logger/Formatters/ILogFormatter.h"
 #include "Felis/Logger/Writers/ILogWriter.h"
 
+namespace Felis
+{
 // A destination for logging stuff
 // Has a Type so we can log only some stuff, an ILogWriter and an ILogFormatter
 struct LogDestination
@@ -82,11 +84,12 @@ inline void Logger::LogFmt(ELogLevel level, std::format_string<Args...> fmt, Arg
 
 	Log({m_Flags, DateTime::Now(), level, m_Prefix, std::format(fmt, std::forward<Args>(args)...)});
 }
+} // namespace Felis
 
-#define FELIS_LOG_CONSOLE(Level, ...) Logger::GetGlobalLogger().Log(Level, __VA_ARGS__)
+#define FELIS_LOG_CONSOLE(Level, ...) ::Felis::Logger::GetGlobalLogger().Log(Level, __VA_ARGS__)
 
-#define LogCritical(...) FELIS_LOG_CONSOLE(ELogLevel::Critical, __VA_ARGS__)
-#define LogError(...) FELIS_LOG_CONSOLE(ELogLevel::Error, __VA_ARGS__)
-#define LogWarning(...) FELIS_LOG_CONSOLE(ELogLevel::Warning, __VA_ARGS__)
-#define LogInfo(...) FELIS_LOG_CONSOLE(ELogLevel::Info, __VA_ARGS__)
-#define LogDebug(...) FELIS_LOG_CONSOLE(ELogLevel::Debug, __VA_ARGS__)
+#define LogCritical(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Critical, __VA_ARGS__)
+#define LogError(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Error, __VA_ARGS__)
+#define LogWarning(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Warning, __VA_ARGS__)
+#define LogInfo(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Info, __VA_ARGS__)
+#define LogDebug(...) FELIS_LOG_CONSOLE(::Felis::ELogLevel::Debug, __VA_ARGS__)

@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Felis
+{
 // uint8_t flags for a log message
 struct LogFlags
 {
@@ -28,3 +30,4 @@ struct LogEntry
 	std::string Prefix;
 	std::string Message;
 };
+} // namespace Felis

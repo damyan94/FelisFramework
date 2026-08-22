@@ -3,6 +3,8 @@
 #include "Felis/Time/Timer.h"
 #include "Felis/Time/TimerData.h"
 
+namespace Felis
+{
 // Manages timers and executes timer callbacks
 // Timers access its functionality via the TimerId
 // The Update method must be called from the main thread
@@ -54,3 +56,4 @@ private:
 	std::vector<size_t>		   m_FreeIndices;
 	std::vector<TimerCallback> m_CallbacksToExecute;
 };
+} // namespace Felis

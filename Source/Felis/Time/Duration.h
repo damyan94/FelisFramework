@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Felis
+{
 template <typename T>
 concept ChronoDuration =
 	requires {
@@ -66,3 +68,4 @@ inline T Duration::As() const
 {
 	return std::chrono::duration_cast<T>(m_Value);
 }
+} // namespace Felis

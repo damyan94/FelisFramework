@@ -11,7 +11,7 @@
 #include "Time/TimerTest.h"
 
 TestApplication::TestApplication(int argC, char** argV)
-	: Application(argC, argV)
+	: Felis::Application(argC, argV)
 {
 }
 
@@ -20,12 +20,12 @@ int TestApplication::GetFailures() const
 	return m_Failures;
 }
 
-ApplicationError TestApplication::OnInit()
+Felis::ApplicationError TestApplication::OnInit()
 {
-	return EApplicationErrorCode::Success;
+	return Felis::EApplicationErrorCode::Success;
 }
 
-ApplicationError TestApplication::OnRun()
+Felis::ApplicationError TestApplication::OnRun()
 {
 	m_Failures = 0;
 	m_Failures += Test::TestApplicationLifecycle();
@@ -36,10 +36,10 @@ ApplicationError TestApplication::OnRun()
 	m_Failures += Test::TestTime();
 	m_Failures += Test::TestTimers();
 
-	return EApplicationErrorCode::Success;
+	return Felis::EApplicationErrorCode::Success;
 }
 
-ApplicationError TestApplication::OnDeinit()
+Felis::ApplicationError TestApplication::OnDeinit()
 {
-	return EApplicationErrorCode::Success;
+	return Felis::EApplicationErrorCode::Success;
 }

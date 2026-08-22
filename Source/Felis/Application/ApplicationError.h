@@ -2,6 +2,8 @@
 
 #include "Felis/Error/Error.h"
 
+namespace Felis
+{
 enum class EApplicationErrorCode : int32_t
 {
 	Success = 0,
@@ -13,3 +15,4 @@ enum class EApplicationErrorCode : int32_t
 };
 
 using ApplicationError = Error<EApplicationErrorCode>;
+} // namespace Felis

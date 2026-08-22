@@ -2,6 +2,8 @@
 
 #include "Felis/Logger/Log.h"
 
+namespace Felis
+{
 // Interface for all log writers
 // Writers should be thread safe
 class ILogWriter
@@ -15,3 +17,4 @@ public:
 };
 
 using ILogWriterPtr = std::unique_ptr<ILogWriter>;
+} // namespace Felis

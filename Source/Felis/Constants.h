@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+namespace Felis
+{
 namespace Constants
 {
 namespace Application
@@ -30,3 +32,4 @@ inline constexpr int MinTimerIntervalMilliseconds = 10;
 inline constexpr int MaxTimerIntervalYears		  = 1;
 } // namespace Time
 } // namespace Constants
+} // namespace Felis

@@ -2,6 +2,9 @@
 
 #include "Felis/Time/Duration.h"
 
+namespace Felis
+{
+
 const Duration Duration::Zero = Duration::Nanoseconds(0);
 
 std::ostream& operator<<(std::ostream& out, Duration dt)
@@ -59,3 +62,5 @@ int64_t Duration::As(EUnitOfTime unit) const
 	default: AssertReturnIf(true, 0);
 	}
 }
+
+} // namespace Felis

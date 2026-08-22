@@ -2,6 +2,8 @@
 
 #include "Felis/Logger/Log.h"
 
+namespace Felis
+{
 // Interface for all log formatters
 class ILogFormatter
 {
@@ -13,3 +15,4 @@ public:
 };
 
 using ILogFormatterPtr = std::unique_ptr<ILogFormatter>;
+} // namespace Felis

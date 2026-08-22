@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Felis
+{
 using TimerCallback = std::function<void()>;
 
 enum class ETimerType : uint8_t
@@ -66,3 +68,4 @@ public:
 private:
 	TimerId m_Id;
 };
+} // namespace Felis

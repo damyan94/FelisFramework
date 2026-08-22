@@ -1,7 +1,7 @@
 # Felis example
 
 The example is a small text-statistics CLI application. It demonstrates the
-`Application` lifecycle, command-line argument handling, logging, file I/O and
+`Felis::Application` lifecycle, command-line argument handling, logging, file I/O and
 application exit codes without introducing additional dependencies.
 
 ## Building

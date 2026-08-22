@@ -3,15 +3,15 @@
 #include "ExampleApplication.h"
 
 ExampleApplication::ExampleApplication(int argC, char** argV)
-	: Application(argC, argV)
+	: Felis::Application(argC, argV)
 {
 }
 
-ApplicationError ExampleApplication::OnInit()
+Felis::ApplicationError ExampleApplication::OnInit()
 {
 	auto& args = GetCommandLineArguments();
 
-	Logger::GetGlobalLogger().SetLogPrefix("FelisExample");
+	Felis::Logger::GetGlobalLogger().SetLogPrefix("FelisExample");
 
 	args.EnableArgumentValidation(true);
 	args.AddAllowedArgument("help");
@@ -19,10 +19,10 @@ ApplicationError ExampleApplication::OnInit()
 	args.AddAllowedArgument("verbose");
 
 	m_ShowHelp = args.HasArgument("help");
-	ReturnIf(m_ShowHelp, EApplicationErrorCode::Success);
+	ReturnIf(m_ShowHelp, Felis::EApplicationErrorCode::Success);
 
-	NonAllowedArgumentsContainer unexpectedArguments;
-	const auto					 validationError = args.ValidateNamedArguments(unexpectedArguments);
+	Felis::NonAllowedArgumentsContainer unexpectedArguments;
+	const auto							validationError = args.ValidateNamedArguments(unexpectedArguments);
 	if (validationError)
 	{
 		for (const auto& argument : unexpectedArguments)
@@ -31,13 +31,13 @@ ApplicationError ExampleApplication::OnInit()
 		}
 
 		PrintUsage();
-		return EApplicationErrorCode::InvalidCommandLineArguments;
+		return Felis::EApplicationErrorCode::InvalidCommandLineArguments;
 	}
 
 	if (args.GetPositionalArguments().size() != 1)
 	{
 		LogError("Expected exactly one input file. Use --help for usage.");
-		return EApplicationErrorCode::InvalidCommandLineArguments;
+		return Felis::EApplicationErrorCode::InvalidCommandLineArguments;
 	}
 
 	m_InputPath = args.GetPositionalArguments().front();
@@ -47,7 +47,7 @@ ApplicationError ExampleApplication::OnInit()
 	if (error)
 	{
 		LogError(error);
-		return EApplicationErrorCode::InvalidCommandLineArguments;
+		return Felis::EApplicationErrorCode::InvalidCommandLineArguments;
 	}
 
 	if (mode == "lines")
@@ -65,41 +65,41 @@ ApplicationError ExampleApplication::OnInit()
 	else
 	{
 		LogError("Invalid mode '", mode, "'. Expected lines, words or bytes.");
-		return EApplicationErrorCode::InvalidCommandLineArguments;
+		return Felis::EApplicationErrorCode::InvalidCommandLineArguments;
 	}
 
 	error = args.GetOrDefault("verbose", m_Verbose, false);
 	if (error)
 	{
 		LogError(error);
-		return EApplicationErrorCode::InvalidCommandLineArguments;
+		return Felis::EApplicationErrorCode::InvalidCommandLineArguments;
 	}
 
 	if (m_Verbose)
 	{
-		Logger::GetGlobalLogger().SetLogLevel(ELogLevel::Info);
+		Felis::Logger::GetGlobalLogger().SetLogLevel(Felis::ELogLevel::Info);
 	}
 	else
 	{
-		Logger::GetGlobalLogger().SetLogLevel(ELogLevel::Error);
+		Felis::Logger::GetGlobalLogger().SetLogLevel(Felis::ELogLevel::Error);
 	}
 
-	return EApplicationErrorCode::Success;
+	return Felis::EApplicationErrorCode::Success;
 }
 
-ApplicationError ExampleApplication::OnRun()
+Felis::ApplicationError ExampleApplication::OnRun()
 {
 	if (m_ShowHelp)
 	{
 		PrintUsage();
-		return EApplicationErrorCode::Success;
+		return Felis::EApplicationErrorCode::Success;
 	}
 
 	std::ifstream input(m_InputPath, std::ios::binary);
 	if (!input.is_open())
 	{
 		LogError("Failed to open input file: ", m_InputPath);
-		return EApplicationErrorCode::RuntimeFailed;
+		return Felis::EApplicationErrorCode::RuntimeFailed;
 	}
 
 	uint64_t lineCount			= 0;
@@ -131,7 +131,7 @@ ApplicationError ExampleApplication::OnRun()
 	if (input.bad())
 	{
 		LogError("Failed while reading input file: ", m_InputPath);
-		return EApplicationErrorCode::RuntimeFailed;
+		return Felis::EApplicationErrorCode::RuntimeFailed;
 	}
 
 	if (byteCount > 0 && !endsWithNewline)
@@ -163,7 +163,7 @@ ApplicationError ExampleApplication::OnRun()
 	LogInfo("Processed ", byteCount, " bytes from ", m_InputPath);
 	std::cout << result << ' ' << label << ": " << m_InputPath << '\n';
 
-	return EApplicationErrorCode::Success;
+	return Felis::EApplicationErrorCode::Success;
 }
 
 void ExampleApplication::PrintUsage() const
@@ -182,9 +182,9 @@ void ExampleApplication::PrintUsage() const
 			  << "  --           Stop parsing named arguments.\n";
 }
 
-ApplicationError ExampleApplication::OnDeinit()
+Felis::ApplicationError ExampleApplication::OnDeinit()
 {
-	Logger::GetGlobalLogger().Flush();
+	Felis::Logger::GetGlobalLogger().Flush();
 
-	return EApplicationErrorCode::Success;
+	return Felis::EApplicationErrorCode::Success;
 }

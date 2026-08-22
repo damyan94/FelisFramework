@@ -2,6 +2,8 @@
 
 #include "Felis/Time/Timer.h"
 
+namespace Felis
+{
 // Contains information about a given Timer, identified by its TimerId
 struct TimerData
 {
@@ -12,3 +14,4 @@ struct TimerData
 	Duration	  Elapsed;
 	TimerCallback Callback;
 };
+} // namespace Felis

@@ -4,6 +4,9 @@
 
 #define FELIS_USE_CHRONO_FORMATTER
 
+namespace Felis
+{
+
 namespace TimeFormat
 {
 std::string ToString(DateTime dateTime, ETimeStringFormat format)
@@ -54,3 +57,5 @@ std::ostream& operator<<(std::ostream& os, DateTime dateTime)
 
 	return os;
 }
+
+} // namespace Felis

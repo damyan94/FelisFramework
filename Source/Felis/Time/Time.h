@@ -2,6 +2,8 @@
 
 #include "Felis/Time/Duration.h"
 
+namespace Felis
+{
 template <typename T>
 concept ChronoClock = std::chrono::is_clock_v<T>;
 
@@ -121,3 +123,4 @@ std::string ToString(DateTime dateTime, ETimeStringFormat format = ETimeStringFo
 } // namespace TimeFormat
 
 extern std::ostream& operator<<(std::ostream& os, DateTime dateTime);
+} // namespace Felis

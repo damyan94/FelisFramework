@@ -2,6 +2,8 @@
 
 #include "Felis/Application/CommandLineArgumentsError.h"
 
+namespace Felis
+{
 template <>
 const char* Error<ECommandLineArgumentErrorCode>::s_Type = "Command line argument error";
 
@@ -14,3 +16,4 @@ const ErrorRegistry<ECommandLineArgumentErrorCode> Error<ECommandLineArgumentErr
 	ErrorData{"Positional argument index is out of range"},
 	ErrorData{"Unexpected command-line argument"},
 });
+} // namespace Felis

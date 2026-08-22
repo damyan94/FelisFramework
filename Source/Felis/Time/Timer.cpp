@@ -4,6 +4,9 @@
 
 #include "Felis/Time/TimerManager.h"
 
+namespace Felis
+{
+
 Timer::Timer()
 {
 }
@@ -104,3 +107,5 @@ TimerId Timer::GetId() const
 {
 	return m_Id;
 }
+
+} // namespace Felis

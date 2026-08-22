@@ -4,6 +4,8 @@
 
 #include "Felis/Error/Error.h"
 
+namespace Felis
+{
 template <>
 const char* Error<EFelisErrorCode>::s_Type = "FelisFramework error";
 
@@ -13,3 +15,4 @@ const ErrorRegistry<EFelisErrorCode> Error<EFelisErrorCode>::s_Registry({
 	ErrorData{"Unknown"},
 	ErrorData{"Generic"},
 });
+} // namespace Felis

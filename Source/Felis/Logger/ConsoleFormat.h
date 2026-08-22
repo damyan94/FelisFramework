@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Felis
+{
 // Utilities for formatting output to the console
 // TODO add iomanip functionality
 class ConsoleFormat
@@ -21,3 +23,4 @@ private:
 	std::string m_String;
 	bool		m_HasAttributes;
 };
+} // namespace Felis

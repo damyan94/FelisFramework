@@ -2,6 +2,8 @@
 
 #include "Felis/Application/CommandLineArguments.h"
 
+namespace Felis
+{
 static const std::string s_ErrorString("<ERROR>");
 
 CommandLineArguments::CommandLineArguments(int argC, char** argV)
@@ -174,3 +176,4 @@ CommandLineArgumentError CommandLineArguments::ValidateNamedArguments(
 
 	return ECommandLineArgumentErrorCode::Success;
 }
+} // namespace Felis

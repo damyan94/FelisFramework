@@ -5,6 +5,9 @@
 #include "Felis/Logger/Formatters/LogFormatterConsole.h"
 #include "Felis/Logger/Writers/LogWriterConsole.h"
 
+namespace Felis
+{
+
 static Logger CreateGlobalLogger()
 {
 	Logger logger;
@@ -102,3 +105,5 @@ void Logger::Log(const LogEntry& log)
 		dest.Writer->Write(log, *dest.Formatter);
 	}
 }
+
+} // namespace Felis

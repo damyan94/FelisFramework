@@ -8,10 +8,10 @@
 
 // Compile-time checks for the ChronoDuration concept - not worth a runtime TEST_CHECK,
 // since a failure here is a compile error, not a boolean result.
-static_assert(ChronoDuration<std::chrono::seconds>);
-static_assert(ChronoDuration<std::chrono::nanoseconds>);
-static_assert(!ChronoDuration<int>);
-static_assert(!ChronoDuration<double>);
+static_assert(Felis::ChronoDuration<std::chrono::seconds>);
+static_assert(Felis::ChronoDuration<std::chrono::nanoseconds>);
+static_assert(!Felis::ChronoDuration<int>);
+static_assert(!Felis::ChronoDuration<double>);
 
 namespace Test
 {

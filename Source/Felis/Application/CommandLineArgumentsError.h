@@ -2,6 +2,8 @@
 
 #include "Felis/Error/Error.h"
 
+namespace Felis
+{
 enum class ECommandLineArgumentErrorCode : int32_t
 {
 	Success = 0,
@@ -14,3 +16,4 @@ enum class ECommandLineArgumentErrorCode : int32_t
 };
 
 using CommandLineArgumentError = Error<ECommandLineArgumentErrorCode>;
+} // namespace Felis

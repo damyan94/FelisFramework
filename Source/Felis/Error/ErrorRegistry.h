@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Felis
+{
 // Holds additional data for a given error code
 // TODO Additional fields could be added here like severity, etc.
 struct ErrorData
@@ -49,3 +51,4 @@ inline const ErrorData& ErrorRegistry<T>::GetErrorData(T errorCode) const
 
 	return m_ErrorData[static_cast<size_t>(index)];
 }
+} // namespace Felis

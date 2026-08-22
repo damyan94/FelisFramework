@@ -11,6 +11,8 @@
 namespace
 {
 
+using namespace Felis;
+
 // Captures every LogEntry written to it via a real ILogFormatter, so
 // integration tests can assert on captured LogEntry fields and/or the
 // real formatted line without printing anywhere. Thread-safe.
