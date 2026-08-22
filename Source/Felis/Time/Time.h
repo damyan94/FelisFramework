@@ -5,7 +5,13 @@
 namespace Felis
 {
 template <typename T>
-concept ChronoClock = std::chrono::is_clock_v<T>;
+concept ChronoClock = requires
+{
+	typename T::duration;
+	typename T::time_point;
+	requires ChronoDuration<typename T::duration>;
+	{ T::now() } -> std::same_as<typename T::time_point>;
+};
 
 // Basic time class containing common logic
 template <ChronoClock ClockType>
